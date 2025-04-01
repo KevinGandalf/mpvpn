@@ -1,0 +1,8 @@
+[Unit]
+Description=Runs bypass script every 12 hours
+After=network.target
+
+[Service]
+ExecStart=/opt/mpvn/helper/splitdns.sh
+User=root
+Type=oneshot
