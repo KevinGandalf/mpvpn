@@ -1,0 +1,15 @@
+[Unit]
+Description=WireGuard Killswitch mit Dauerüberwachung
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/mpvpn/helperscripts/killswitch/killswitch.sh
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
