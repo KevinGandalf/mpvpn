@@ -60,18 +60,18 @@ declare -A KNOWN_IPS
 
 # Alle Domains durchgehen
 for DOMAIN in "${DOMAINS[@]}"; do
-    echo "Starte DNS-Abfragen für $DOMAIN..."
+    echo "Starte DNS-Abfragen für $DOMAINS..."
 
     for DNS in "${DNS_SERVERS[@]}"; do
         echo "  Frage DNS-Server: $DNS"
 
         # IPv4-Adressen abrufen
-        for IP in $(dig +short A @$DNS "$DOMAIN"); do
+        for IP in $(dig +short A @$DNS "$DOMAINS"); do
             KNOWN_IPS["$IP"]=1
         done
 
         # IPv6-Adressen abrufen (optional)
-        for IP in $(dig +short AAAA @$DNS "$DOMAIN"); do
+        for IP in $(dig +short AAAA @$DNS "$DOMAINS"); do
             KNOWN_IPS["$IP"]=1
         done
 
