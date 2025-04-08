@@ -1,14 +1,28 @@
 #!/bin/bash
 
+source /opt/mpvpn/globals.sh
+
 # Definiere die Datei, in der die IP-Adressen gespeichert werden
 IP_FILE="/opt/mpvpn/helperscripts/splitdns/vpn_bypass_ips.txt"
 IP_FILE_PREVIOUS="/opt/mpvpn/helperscripts/splitdns/vpn_bypass_ips_previous.txt"
 
-# Definiere das Gateway für enp1s0
-#Ggf. Anpassen!!!
-GATEWAY_enp1s0="192.168.1.1"
-INTERFACE="enp1s0"
-ROUTING_TABLE="enp1s0only"
+
+# Finde die MARK für die Tabelle mit Name "clear"
+for entry in "${EXTRA_RT_TABLES[@]}"; do
+    rt_id=$(echo "$entry" | awk '{print $1}')
+    rt_name=$(echo "$entry" | awk '{print $2}')
+
+    if [[ "$rt_name" == "clear" ]]; then
+        MARK=$rt_id
+        break
+    fi
+done
+
+# Wenn keine passende Tabelle gefunden wurde
+if [[ -z "$MARK" ]]; then
+    echo "❌ Tabelle 'clear' nicht in EXTRA_RT_TABLES gefunden!"
+    exit 1
+fi
 
 # 1. Lade die IP-Adressen von GitHub herunter
 echo "$(date) - Lade IP-Adressen von GitHub herunter..."
@@ -52,7 +66,7 @@ for i in "${!ip_list[@]}"; do
     # Überprüfen, ob die IP-Adresse bereits als Route existiert
     if ! ip route show | grep -q "$ip_only"; then
         echo "$(date) - Neue IP-Adresse $ip_only gefunden, füge Route hinzu" >> /var/log/vpn_routing.log
-        sudo ip route add "$ip_only" via "$GATEWAY_enp1s0" dev "$INTERFACE" 
+        sudo ip route add "$ip_only" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF"
     fi
 
     # Fortschrittsbalken aktualisieren
