@@ -64,7 +64,7 @@ echo "Setze Table 200..."
 
 #Erhalte IP-Adressen zu diversen Mail Domänen, mit Output
 echo "Besorge IP-Adressen von diversen Mail Diensten..."
-/opt/mpvpn/helperscripts/splitdns/get_mailsrv.sh
+/opt/mpvpn/helperscripts/splitdns/get_mailserver.sh
 
 echo "Setze iptables zurück und stelle Regeln wieder her..."
 /opt/mpvpn/helperscripts/iptables_script.sh
@@ -77,7 +77,7 @@ echo "Prüfe Verbindungen..."
 tail -n 10 /var/log/vpn_ip_log.txt
 sleep 3
 echo "Einrichtung SplitDNS"
-/opt/mpvpn/helperscripts/splitdns/get_splitdns.sh
+/opt/mpvpn/helperscripts/splitdns/get_streaming.sh
 /opt/mpvpn/helperscripts/splitdns/get_splitdnsdomains.sh
 
 echo "...Have Fun!..."
