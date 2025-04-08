@@ -1,67 +1,25 @@
 #!/bin/bash
+source /opt/mpvpn/globals.sh
 
-# Problematische Domains mit VPN (erweiterbar, inkl. Wildcards für Subdomains)
-DOMAINS=(
-  "bild.de"
-  "netflix.com"
-  "amazon.de"
-  "amazon.com"
-  "paypal.com"
-  "bankofamerica.com"
-  "sparkasse.de"
-  "postbank.de"
-  "playstation.com"
-  "nintendo.com"
-  "steamcommunity.com"
-  "epicgames.com"
-  "icloud.com"
-  "github.com"
-  "kicker.de"
-  "dkb.de"
-  "comdirect.de"
-  "ing.de"
-  "n26.com"
-  "ebay.de"
-  "otto.de"
-  "zalando.de"
-  "rtlplus.de"
-  "zdf.de"
-  "ard.de"
-  "repo.almalinux.org"
-  "mirror.centos.org"
-  "mirrors.edge.kernel.org"
-  "vault.centos.org"
-  "dl.fedoraproject.org"
-  "mirrors.fedoraproject.org"
-  "deb.debian.org"
-  "security.debian.org"
-  "ftp.debian.org"
-  "archive.ubuntu.com"
-  "security.ubuntu.com"
-  "ppa.launchpad.net"
-  "mirror.archlinuxarm.org"
-  "archlinux.org"
-  "mirrors.kernel.org"
-  "repo.manjaro.org"
-  "download.opensuse.org"
-  "mirrorcache.opensuse.org"
-  "distfiles.gentoo.org"
-  "gentoo.osuosl.org"
-  "packagecloud.io"
-  "repo.nordvpn.com"
-  "mirrors.almalinux.org"
-  "mirror.virtarix.com"
-  "mirror.junda.nl"
-  "app.n26.de"
-  "elrepo.org"
-  "mirrors.elrepo.org"
-  "mirror.selfnet.de"
-  "kleinanzeigen.de"
-)
 # Netzwerkschnittstelle & Gateway für Routing
-INTERFACE="enp1s0"
-GATEWAY="192.168.1.1"
-TABLE="100"
+
+# Finde die MARK für die Tabelle mit Name "clear"
+for entry in "${EXTRA_RT_TABLES[@]}"; do
+    rt_id=$(echo "$entry" | awk '{print $1}')
+    rt_name=$(echo "$entry" | awk '{print $2}')
+
+    if [[ "$rt_name" == "clear" ]]; then
+        MARK=$rt_id
+        break
+    fi
+done
+
+# Wenn keine passende Tabelle gefunden wurde
+if [[ -z "$MARK" ]]; then
+    echo "❌ Tabelle 'clear' nicht in EXTRA_RT_TABLES gefunden!"
+    exit 1
+fi
+
 LOGFILE="/var/log/splitdns_routing.log"
 
 # DNS-Server für die Auflösung
@@ -75,11 +33,11 @@ DNS_SERVERS=(
 )
 
 # Prüfen, ob die Routing-Tabelle existiert, dann leeren
-if ip rule list | grep -q "$TABLE"; then
-echo "Flushing routing table $TABLE..."
-ip route flush table $TABLE
+if ip rule list | grep -q "$MARK"; then
+echo "Flushing routing table $MARK..."
+ip route flush table $MARK
 else
-echo "Routing table $TABLE does not exist, creating it..."
+echo "Routing table $MARK does not exist, creating it..."
 fi
 
 # Log-Funktion (nur ins Logfile schreiben)
@@ -117,7 +75,7 @@ echo "Routing-Update läuft..."
 TOTAL_DOMAINS=${#DOMAINS[@]}
 CURRENT_COUNT=0
 
-# NordVPN-IPs ermitteln um DNS Leaks zu vermeiden
+# NordVPN-IPs ermitteln
 declare -A NORDVPN_IPS
 for DNS in "${DNS_SERVERS[@]}"; do
   IPS=($(dig +short A "nordvpn.com" @${DNS} | grep -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$"))
@@ -160,8 +118,8 @@ for SERVER in "${DOMAINS[@]}"; do
   # Routen hinzufügen
   for IP in "${!UNIQUE_IPS[@]}"; do
     if ! ip route show | grep -q "$IP"; then
-      ip route add "$IP" via "$GATEWAY" dev "$INTERFACE" table "$TABLE"
-      iptables -t mangle -A PREROUTING -d "$IP" -j MARK --set-mark "$TABLE"
+      ip route add "$IP" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF" table "$MARK"
+      iptables -t mangle -A PREROUTING -d "$IP" -j MARK --set-mark "$MARK"
       log "Route für $IP hinzugefügt"
     fi
   done
