@@ -73,7 +73,7 @@ echo "Setze iptables zurück und stelle Regeln wieder her..."
 #systemctl start killswitch
 
 echo "Prüfe Verbindungen..."
-/opt/mpvpn/helperscripts/curl2.sh
+/opt/mpvpn/helperscripts/misc/check_connection.sh
 tail -n 10 /var/log/vpn_ip_log.txt
 sleep 3
 echo "Einrichtung SplitDNS"
