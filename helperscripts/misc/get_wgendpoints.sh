@@ -1,11 +1,10 @@
 #!/bin/bash
+source /opt/mpvpn/globals.sh
 
 # Verzeichnis mit den WireGuard-Konfigurationsdateien
 WG_DIR="/etc/wireguard"
 
 # Gateway und Interface für die Route
-GATEWAY="192.168.1.1"
-INTERFACE="enp1s0"
 
 # Array für bereits verarbeitete IPs (zum Duplikate vermeiden)
 declare -A KNOWN_IPS
@@ -40,7 +39,7 @@ for CONF in "$WG_DIR"/*.conf; do
             if [[ -z "${KNOWN_IPS[$IP]}" ]]; then
                 KNOWN_IPS["$IP"]=1
                 echo "Setze Route für: $IP"
-                sudo ip route add "$IP" via "$GATEWAY" dev "$INTERFACE"
+                sudo ip route add "$IP" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF"
             fi
         fi
     done < "$CONF"
