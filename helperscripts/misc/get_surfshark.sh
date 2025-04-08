@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Surfshark Helper Script um die Domains der Verbindungen aufzulösen, kann aber auch für andere Anbieter genutzt werden
+source /opt/mpvpn/globals.sh
 
 # Liste der DNS-Server
 DNS_SERVERS=("8.8.8.8" "1.1.1.1" "9.9.9.9" "208.67.222.222")
 
-# Liste der Ziel-Domains, je nach Standort (einfach erweitern)
+# Ziel-Domain
 DOMAINS=(
     "de-ber.prod.surfshark.com"
     "de-fra.prod.surfshark.com"
@@ -51,39 +51,33 @@ DOMAINS=(
     "bg-sof.prod.surfshark.com"
 )
 
-# Gateway und Interface für die Route – anpassen!
-GATEWAY="192.168.1.1"
-INTERFACE="enp1s0"
-
-# Array für bekannte IPs (doppelte vermeiden)
+# Array für bekannte IPs
 declare -A KNOWN_IPS
 
-# Alle Domains durchgehen
-for DOMAIN in "${DOMAINS[@]}"; do
-    echo "Starte DNS-Abfragen für $DOMAINS..."
+echo "Starte DNS-Abfragen für $DOMAIN..."
 
-    for DNS in "${DNS_SERVERS[@]}"; do
-        echo "  Frage DNS-Server: $DNS"
+# DNS-Abfragen über verschiedene Server
+for DNS in "${DNS_SERVERS[@]}"; do
+    echo "Frage DNS-Server: $DNS"
 
-        # IPv4-Adressen abrufen
-        for IP in $(dig +short A @$DNS "$DOMAINS"); do
-            KNOWN_IPS["$IP"]=1
-        done
-
-        # IPv6-Adressen abrufen (optional)
-        for IP in $(dig +short AAAA @$DNS "$DOMAINS"); do
-            KNOWN_IPS["$IP"]=1
-        done
-
-        sleep 1
+    # IPv4-Adressen abrufen
+    for IP in $(dig +short A @$DNS $DOMAINS); do
+        KNOWN_IPS["$IP"]=1
     done
+
+    # IPv6-Adressen abrufen (optional)
+    for IP in $(dig +short AAAA @$DNS $DOMAINS); do
+        KNOWN_IPS["$IP"]=1
+    done
+
+    # Eine Sekunde warten, um Rate-Limiting zu vermeiden
+    sleep 1
 done
 
 # Neue Routen setzen
-echo "Setze Routen..."
 for IP in "${!KNOWN_IPS[@]}"; do
-    echo "  Setze Route für: $IP"
-    sudo ip route add "$IP" via "$GATEWAY" dev "$INTERFACE"
+    echo "Setze Route für: $IP"
+    sudo ip route add "$IP" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF"
 done
 
 echo "Fertig!"
