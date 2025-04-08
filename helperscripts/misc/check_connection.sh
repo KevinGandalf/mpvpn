@@ -1,19 +1,13 @@
 #!/bin/bash
 
+source /opt/mpvpn/globals.sh
+
 # Log-Datei definieren
 LOG_FILE="/var/log/vpn_ip_log.txt"
-
-# Schnittstellen für WireGuard und OpenVPN
-wireguard_interfaces=("vpn1" "vpn2" "vpn3" "vpn4")
-openvpn_interfaces=("tun0" "tun1")
-
-# Alle Interfaces zusammenführen
-all_interfaces=("${wireguard_interfaces[@]}" "${openvpn_interfaces[@]}")
-
-# Aktuelles Datum und Uhrzeit
 timestamp=$(date "+%Y-%m-%d %H:%M:%S")
 
-# Status-Variable, ob mindestens ein WireGuard-Interface eine IP hat
+# Alle Interfaces zusammenführen
+all_interfaces=("${WGVPN_LIST[@]}" "${OVPN_LIST[@]}")
 wg_has_ip=0
 
 # Loggen der IPs für alle Interfaces
@@ -23,8 +17,7 @@ for interface in "${all_interfaces[@]}"; do
 
     if [[ -n $ip ]]; then
       echo "$timestamp - $interface: $ip" >> "$LOG_FILE"
-      # Falls ein WireGuard-Interface eine IP hat, setzen wir die Variable
-      if [[ " ${wireguard_interfaces[*]} " =~ " ${interface} " ]]; then
+      if [[ " ${WGVPN_LIST[*]} " =~ " ${interface} " ]]; then
         wg_has_ip=1
       fi
     else
@@ -33,23 +26,41 @@ for interface in "${all_interfaces[@]}"; do
   fi
 done
 
-# Falls KEIN WireGuard-Interface eine IP hat, prüfe und entferne Routen
+# Falls kein WireGuard eine IP hat → entferne Split-Routen über tun0/tun1
 if [[ $wg_has_ip -eq 0 ]]; then
   echo "$timestamp - Kein WireGuard-VPN mit IP gefunden, überprüfe Routen..." >> "$LOG_FILE"
 
-  # Liste der zu entfernenden Routen
-  routes=(
+  # Routen prüfen & ggf. löschen
+  declare -a routes=(
     "0.0.0.0/1 via 10.100.0.1 dev tun0"
     "128.0.0.0/1 via 10.100.0.1 dev tun0"
     "0.0.0.0/1 via 10.8.8.1 dev tun1"
     "128.0.0.0/1 via 10.8.8.1 dev tun1"
   )
 
-  # Durchgehen der Routen und ggf. löschen
   for route in "${routes[@]}"; do
     if ip route show | grep -q "$route"; then
-      sudo ip route del $route
+      ip route del $route
       echo "$timestamp - Route entfernt: $route" >> "$LOG_FILE"
     fi
   done
+fi
+
+# Überprüfen, ob OpenVPN aktiviert ist
+if [ "$ENABLE_OVPN" = true ]; then
+    # OpenVPN-IPs loggen
+    for vpn in "${OVPN_LIST[@]}"; do
+        # Falls OpenVPN aktiv ist, IP abfragen und loggen
+        if ip link show "$vpn" 2>/dev/null | grep -q "UP"; then
+            ip=$(curl --interface "$vpn" -s ipinfo.io | grep -oP '"ip": "\K[^"]+')
+
+            if [[ -n $ip ]]; then
+                echo "$timestamp - $vpn: $ip" >> "$LOG_FILE"
+            else
+                echo "$timestamp - $vpn: Keine IP erhalten" >> "$LOG_FILE"
+            fi
+        fi
+    done
+else
+    echo "$timestamp - OpenVPN ist deaktiviert – keine OpenVPN-IP-Protokolle werden erfasst." >> "$LOG_FILE"
 fi
