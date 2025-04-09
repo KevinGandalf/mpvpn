@@ -129,3 +129,22 @@ else
     echo "❌ Unbekannte Distribution. Dieses Skript unterstützt derzeit nur Debian, Ubuntu, AlmaLinux, Rocky Linux, Fedora, Gentoo, Arch, Alpine und openSUSE."
     exit 1
 fi
+
+cat <<EOF >> /etc/sysctl.conf
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 0
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+#net.ipv4.fib_multipath_hash_policy = 1
+net.ipv4.fib_multipath_hash_policy = 2
+net.core.rmem_max = 4194304
+net.core.wmem_max = 4194304
+net.ipv4.tcp_rmem = 4096 87380 4194304
+net.ipv4.tcp_wmem = 4096 65536 4194304
+net.ipv4.tcp_window_scaling = 1
+net.netfilter.nf_conntrack_max = 262144
+net.netfilter.nf_conntrack_tcp_timeout_established = 120
+net.netfilter.nf_conntrack_tcp_timeout_time_wait = 30
+EOF
+
