@@ -32,6 +32,8 @@ for i in "${!VPN_INTERFACES[@]}"; do
     iptables -t mangle -A POSTROUTING -o "$iface" -m conntrack --ctstate NEW -j CONNMARK --set-xmark 0x$mark/0xffffffff
 done
 
+iptables -t mangle -A PREROUTING -j CONNMARK --restore-mark
+iptables -t mangle -A POSTROUTING -m mark ! --mark 0 -j CONNMARK --save-mark
 iptables -t mangle -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j CONNMARK --restore-mark
 
 #Erlaube Ping
@@ -157,10 +159,10 @@ for iface in "${VPN_INTERFACES[@]}"; do
 done
 
 #iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
-iptables -t nat -A POSTROUTING -o $DEFAULT_LANIF -m mark --mark 100 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o enp1s0 -m mark --mark 100 -j MASQUERADE
 
 for port in 25 465 587 993 995; do
-  iptables -t nat -A POSTROUTING -o $DEFAULT_LANIF -p tcp --dport $port -j MASQUERADE
+  iptables -t nat -A POSTROUTING -o enp1s0 -p tcp --dport $port -j MASQUERADE
 done
 
 # Regeln speichern
