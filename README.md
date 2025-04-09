@@ -26,6 +26,7 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 2. Mache das Script ausführbar:
     ```bash
     chmod +x sh
+    ./requirements.sh
     ```
 
 3. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
