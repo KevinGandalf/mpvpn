@@ -1,6 +1,8 @@
 # mpvpn
 
-**mpvpn** ist ein Script zur Verwaltung von Multipath-VPN-Verbindungen (WireGuard und OpenVPN). Es erlaubt das einfache Starten, Stoppen und Verwalten von VPN-Verbindungen sowie die Konfiguration von Routing-Tabellen.
+**mpvpn** ist ein Script zur Verwaltung von Multipath-VPN-Verbindungen (WireGuard und OpenVPN). Es erlaubt das einfache Starten und Verwalten von VPN-Verbindungen sowie die Konfiguration von Routing-Tabellen.
+
+Dafür muss das Script mpvpn.sh ausgeführt werden.
 
 ## Anforderungen
 
