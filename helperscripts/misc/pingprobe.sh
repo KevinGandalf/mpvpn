@@ -53,3 +53,11 @@ done
 echo -e "\nFinal MTU Settings:" | tee -a "$LOG_FILE"
 ip link | grep -E "$(IFS='|'; echo "${WGVPN_LIST[*]}")" | tee -a "$LOG_FILE"
 echo -e "\n==== VPN MTU Probe Complete ==== $(date)" | tee -a "$LOG_FILE"
+
+# TCP MSS Clamping (more aggressive)
+#sudo iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1260
+#sudo iptables -t mangle -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1260
+
+sudo sysctl -w net.ipv4.ip_no_pmtu_disc=1 >/dev/null 2>&1          # Disable PMTU discovery (problematic with VPNs)
+sudo sysctl -w net.ipv4.tcp_mtu_probing = 0 >/dev/null 2>&1          # Disable automatic MTU probing
+sudo sysctl -w net.ipv4.route.min_adv_mss = 1260 >/dev/null 2>&1     # Minimum advertised MSS
