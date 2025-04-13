@@ -1,3 +1,39 @@
+install_debian_ubuntu() {
+    echo "🛠️  Debian/Ubuntu: Update und Upgrade durchführen..."
+    apt update && apt upgrade -y
+    echo "🛠️  Debian/Ubuntu: Installiere curl, wget, git, iptables, net-tools..."
+    apt install -y curl wget git iptables iptables-services net-tools
+
+    # Installiere WireGuard, wenn benötigt
+    if ! dpkg -s wireguard-tools >/dev/null 2>&1; then
+        echo "🛠️  Debian/Ubuntu: Installiere WireGuard..."
+        apt install -y wireguard-tools
+    else
+        echo "ℹ️  WireGuard ist bereits installiert."
+    fi
+
+    # Abfrage, ob OpenVPN installiert werden soll
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    if [[ "$install_ovpn" == "y" ]]; then
+        echo "🛠️  Debian/Ubuntu: Installiere OpenVPN..."
+        apt install -y openvpn
+    else
+        echo "ℹ️  OpenVPN wird nicht installiert."
+    fi
+
+    check_and_disable_ufw
+    echo "✅ Debian/Ubuntu: Installation abgeschlossen."
+}
+
+check_and_disable_ufw() {
+    if command -v ufw >/dev/null 2>&1; then
+        echo "🛠️  Deaktiviere ufw (Uncomplicated Firewall)..."
+        ufw disable
+    else
+        echo "ℹ️  ufw ist nicht installiert oder nicht aktiv."
+    fi
+}
+
 install_fedora() {
     echo "🛠️  Fedora: Update und Upgrade durchführen..."
     dnf update -y
