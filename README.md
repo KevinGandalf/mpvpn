@@ -23,8 +23,8 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 ## Installation
 
 1. Klone das Repository:
-   apt install git
     ```bash
+    apt install git
     cd /opt
     git clone https://github.com/KevinGandalf/mpvpn
     ```
