@@ -16,8 +16,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Notify Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d '{"content": "Es gibt ein neues Update im GitHub Repo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nÄnderungen: ${{ github.event.head_commit.message }}"}' \
-               ${{ secrets.DISCORD_WEBHOOK_URL }}
+               -d '{"content": "Es gibt ein neues Update im GitHub Repo: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nÄnderungen: '${{ github.event.head_commit.message }}'"}' \
+               $DISCORD_WEBHOOK_URL
