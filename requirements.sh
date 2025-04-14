@@ -71,7 +71,7 @@ install_debian_ubuntu() {
     install_iptables_alternative_debian
 
     if ! dpkg -s wireguard-tools >/dev/null 2>&1; then
-        apt install -y wireguard-tools
+        apt install -y wireguard-tools wireguard
     fi
 
     read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
