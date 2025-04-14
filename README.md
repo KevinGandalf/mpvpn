@@ -26,17 +26,20 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
     ```bash
     sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
     cd /opt
+    #Root Passwort festlegen
+    sudo passwd
+    su
     git clone https://github.com/KevinGandalf/mpvpn
     ```
 
-3. Mache das Script ausführbar:
+2. Mache das Script ausführbar:
     ```bash
     cd /opt/mpvpn
     find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
     ./requirements.sh
     ```
 
-4. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
+3. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
 
 ## Konfiguration
 
