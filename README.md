@@ -22,7 +22,7 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 
 ## Installation
 
-1. Klone das Repository:
+1. Ein paar dinge vorab erledigen und klonen des Repository:
     ```bash
     sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
     cd /opt
@@ -36,10 +36,18 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
     ```bash
     cd /opt/mpvpn
     find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
-    ./requirements.sh
+    ln -s /opt/mpvpn/helperscripts/assets/menu.sh /usr/local/bin/mpvpn
+    mpvpn --install
     ```
 
 3. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
+
+4. Wireguard (und ggf. OpenVPN Verbindung) Verbindung per Drag&Drop hinzufügen(z.B. per Putty!):
+    ```bash
+    mpvpn --addwg
+    #für OpenVPN
+    mpvpn --addovpn
+    ```
 
 ## Konfiguration
 
@@ -72,3 +80,21 @@ WGVPN_LIST=("vpn1" "vpn2" "vpn3" "vpn4")
 ENABLE_OVPN=false
 # Default: ENABLE_OVPN=false
 OVPN_LIST=("vpn5" "vpn6")
+```    
+5. MPVPN starten:
+    ```bash
+    mpvpn --startmpvpn
+    ```
+
+## mpvpn Befehle
+```bash
+    Verfügbare Optionen für mpvpn:
+      --startmpvpn : Startet MPVPN
+      --install    : Installiert die Abhängigkeiten
+      --addwg      : Neue WireGuard-Verbindung hinzufügen.
+      --addovpn    : Neue OpenVPN-Verbindung hinzufügen.
+      --list       : Alle Verbindungen anzeigen.
+      --help       : Zeigt diese Hilfe an.
+      --version    : Gibt die Version des Skripts aus.
+```
+
