@@ -1,4 +1,4 @@
-![MPVPN Logo](mpvpn_logo.png)
+![MPVPN Logo](mpvpn_logo_klein.png)
 
 # mpvpn
 
