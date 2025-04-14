@@ -24,14 +24,15 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 
 1. Klone das Repository:
     ```bash
-    apt install git
+    sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
     cd /opt
     git clone https://github.com/KevinGandalf/mpvpn
     ```
 
 3. Mache das Script ausführbar:
     ```bash
-    chmod +x sh
+    cd /opt/mpvpn
+    find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
     ./requirements.sh
     ```
 
