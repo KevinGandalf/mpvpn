@@ -1,4 +1,5 @@
 ![MPVPN Logo](mpvpn_logo_klein.png)
+[![Join our Discord](https://img.shields.io/discord/PK4jdyUd?label=Discord&logo=discord&style=for-the-badge)](https://discord.gg/PK4jdyUd)
 
 # mpvpn
 
