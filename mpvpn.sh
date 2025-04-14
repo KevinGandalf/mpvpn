@@ -1,12 +1,24 @@
 #!/bin/bash
-#systemctl start unbound
+# systemctl start unbound
 source /opt/mpvpn/globals.sh
-#echo "Stoppe Killswitch"
-#systemctl stop killswitch
 
-#Setze alle Counter zurück, lade iptables
-sed -Ei 's/\[[0-9]+:[0-9]+\]/[0:0]/g' /etc/sysconfig/iptables
-#iptables-restore < /etc/sysconfig/iptables
+# Betriebssystem erkennen
+if [[ -f /etc/debian_version ]]; then
+    IPTABLES_RULES_FILE="/etc/iptables/rules.v4"
+elif [[ -f /etc/redhat-release || -f /etc/centos-release || -f /etc/almalinux-release ]]; then
+    IPTABLES_RULES_FILE="/etc/sysconfig/iptables"
+else
+    echo "❌ Unbekanntes Betriebssystem. Skript wird beendet."
+    exit 1
+fi
+
+# Setze alle Counter zurück
+echo "🔄 Setze Zähler in $IPTABLES_RULES_FILE zurück..."
+sed -Ei 's/\[[0-9]+:[0-9]+\]/[0:0]/g' "$IPTABLES_RULES_FILE"
+
+# Lade iptables-Regeln
+echo "♻️  Lade iptables-Regeln aus $IPTABLES_RULES_FILE..."
+iptables-restore < "$IPTABLES_RULES_FILE"
 
 #/opt/mpvpn/iptables_script.sh
 #echo "Stoppe systemd-resolved..."
