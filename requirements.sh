@@ -2,7 +2,7 @@ install_debian_ubuntu() {
     echo "🛠️  Debian/Ubuntu: Update und Upgrade durchführen..."
     apt update && apt upgrade -y
     echo "🛠️  Debian/Ubuntu: Installiere curl, wget, git, iptables, net-tools..."
-    apt install -y curl wget git iptables iptables-services net-tools
+    apt install -y curl wget git iptables iptables-persistent net-tools
 
     # Installiere WireGuard, wenn benötigt
     if ! dpkg -s wireguard-tools >/dev/null 2>&1; then
