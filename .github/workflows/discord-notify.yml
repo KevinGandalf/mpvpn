@@ -17,7 +17,7 @@ jobs:
 
       - name: Notify Discord
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.Dependabot_secrets }}  # sicherstellen, dass der Secret-Name hier korrekt ist
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
