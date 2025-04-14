@@ -146,7 +146,7 @@ DOMAINS=(
   "mirror.selfnet.de"
   "kleinanzeigen.de"
   "ftp.fau.de"
-  " mirror.junda.nl"
+  "mirror.junda.nl"
   "ftp.gwdg.de"
   "almalinux.schlundtech.de"
   "mirror.23m.com"
