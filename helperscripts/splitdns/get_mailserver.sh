@@ -19,8 +19,8 @@ if [[ -z "$MARK" || -z "$TABLE" ]]; then
 fi
 
 # Netzwerkschnittstelle und Gateway aus globals
-INTERFACE="$DEFAULT_LANIF"
-GATEWAY="DEFAULT_WANGW"
+INTERFACE="${DEFAULT_LANIF}"
+GATEWAY="${DEFAULT_WANGW}"
 
 echo "⚙️  Verwende Table '$TABLE' mit Mark '$MARK' über Interface '$INTERFACE' via '$GATEWAY'"
 
