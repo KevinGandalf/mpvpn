@@ -23,18 +23,19 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 ## Installation
 
 1. Klone das Repository:
+   apt install git
     ```bash
     cd /opt
     git clone https://github.com/KevinGandalf/mpvpn
     ```
 
-2. Mache das Script ausführbar:
+3. Mache das Script ausführbar:
     ```bash
     chmod +x sh
     ./requirements.sh
     ```
 
-3. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
+4. Die Basis-Konfigurationen befinden sich in der Datei `globals.sh`. Die Konfiguration der zu verwendenden VPN-Verbindungen und Routing-Tabellen erfolgt hier.
 
 ## Konfiguration
 
