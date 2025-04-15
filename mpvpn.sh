@@ -61,7 +61,9 @@ fi
 /opt/mpvpn/helperscripts/startup/startmp.sh
 
 #ROUTING TABLES
+echo "Setze Routing Tables..."
 /opt/mpvpn/helperscripts/startup/addroutingtables.sh
+/opt/mpvpn/helperscripts/startup/set_wgroute_to_table.sh
 
 #FWMARK
 /opt/mpvpn/helperscripts/startup/addfwmark.sh
