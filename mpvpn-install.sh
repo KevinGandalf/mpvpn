@@ -1,0 +1,181 @@
+#!/bin/bash
+
+set -e
+
+check_and_disable_ufw() {
+    if command -v ufw >/dev/null 2>&1; then
+        echo "🛠️  Deaktiviere ufw..."
+        systemctl stop ufw || true
+        systemctl disable ufw || true
+        ufw disable || true
+    else
+        echo "ℹ️  ufw ist nicht installiert oder nicht aktiv."
+    fi
+}
+
+check_and_disable_firewalld() {
+    if systemctl is-active --quiet firewalld; then
+        echo "🛠️  Deaktiviere firewalld..."
+        systemctl stop firewalld
+        systemctl disable firewalld
+    else
+        echo "ℹ️  firewalld ist nicht aktiv oder nicht installiert."
+    fi
+}
+
+check_iproute2() {
+    if ! command -v ip >/dev/null 2>&1; then
+        echo "⚠️  iproute2 fehlt. Versuche Installation..."
+        case "$DISTRO" in
+            debian|ubuntu) apt install -y iproute2 ;;
+            fedora|rocky|centos|almalinux) dnf install -y iproute ;;
+            arch) pacman -S --noconfirm iproute2 ;;
+            opensuse) zypper install -y iproute2 ;;
+            *) echo "❌ iproute2 konnte nicht automatisch installiert werden." ;;
+        esac
+    fi
+}
+
+install_common_tools_debian() {
+    apt install -y curl wget git iptables net-tools nano rsyslog jq dnsutils dialog wireguard-tools
+}
+
+install_common_tools_rpm() {
+    dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools
+}
+
+install_common_tools_arch() {
+    pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng jq bind-tools dialog wireguard-tools
+}
+
+install_common_tools_suse() {
+    zypper install -y curl wget git iptables net-tools nano syslog-ng jq bind-utils dialog wireguard-tools
+}
+
+install_iptables_alternative_debian() {
+    if ! dpkg -s iptables-persistent >/dev/null 2>&1; then
+        echo "⚠️  iptables-persistent fehlt."
+        read -p "Installiere iptables-persistent? (y/n): " confirm && [[ "$confirm" == "y" ]] && apt install -y iptables-persistent
+    fi
+}
+
+install_iptables_alternative_rpm() {
+    if ! rpm -q iptables-services >/dev/null 2>&1; then
+        echo "⚠️  iptables-services fehlt."
+        read -p "Installiere iptables-services? (y/n): " confirm && [[ "$confirm" == "y" ]] && dnf install -y iptables-services
+    fi
+}
+
+install_epel_if_needed() {
+    if [[ "$DISTRO" =~ ^(rocky|centos|almalinux)$ ]]; then
+        if ! rpm -q epel-release >/dev/null 2>&1; then
+            echo "🛠️  Installiere EPEL-Repository..."
+            dnf install -y epel-release
+        fi
+    fi
+}
+
+install_debian_ubuntu() {
+    echo "🛠️  Debian/Ubuntu: Update..."
+    apt update && apt upgrade -y
+    install_common_tools_debian
+    check_iproute2
+    install_iptables_alternative_debian
+
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    [[ "$install_ovpn" == "y" ]] && apt install -y openvpn
+
+    check_and_disable_ufw
+    echo "✅ Debian/Ubuntu: Fertig."
+}
+
+install_fedora() {
+    echo "🛠️  Fedora: Update..."
+    dnf update -y && dnf upgrade -y
+    install_common_tools_rpm
+    check_iproute2
+    install_iptables_alternative_rpm
+
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    [[ "$install_ovpn" == "y" ]] && dnf install -y openvpn
+
+    check_and_disable_firewalld
+    echo "✅ Fedora: Fertig."
+}
+
+install_rocky_alma() {
+    echo "🛠️  Rocky/CentOS/AlmaLinux: Update..."
+    dnf update -y && dnf upgrade -y
+    install_epel_if_needed
+    install_common_tools_rpm
+    check_iproute2
+    install_iptables_alternative_rpm
+
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    [[ "$install_ovpn" == "y" ]] && dnf install -y openvpn
+
+    check_and_disable_firewalld
+    echo "✅ Rocky/CentOS/AlmaLinux: Fertig."
+}
+
+install_arch() {
+    echo "🛠️  Arch Linux: Update..."
+    pacman -Syu --noconfirm
+    install_common_tools_arch
+    check_iproute2
+
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    [[ "$install_ovpn" == "y" ]] && pacman -S --noconfirm openvpn
+
+    check_and_disable_firewalld
+    echo "✅ Arch Linux: Fertig."
+}
+
+install_opensuse() {
+    echo "🛠️  openSUSE: Update..."
+    zypper update -y
+    install_common_tools_suse
+    check_iproute2
+    install_iptables_alternative_rpm
+
+    read -p "Möchtest du OpenVPN installieren? (y/n): " install_ovpn
+    [[ "$install_ovpn" == "y" ]] && zypper install -y openvpn
+
+    check_and_disable_firewalld
+    echo "✅ openSUSE: Fertig."
+}
+
+detect_distro() {
+    source /etc/os-release
+    DISTRO=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+}
+
+kernel_upgrade_prompt() {
+    echo ""
+    read -p "🔧 Kernel-Upgrade auf 6.x ausführen? (y/n): " upgrade_kernel
+    if [[ "$upgrade_kernel" == "y" ]]; then
+        echo "🚀 Starte Kernel-Upgrade..."
+        bash /opt/mpvpn/helperscripts/misc/kernel_upgrade.sh || echo "⚠️  Kernel-Upgrade fehlgeschlagen."
+        read -p "🔁 Jetzt neu starten? (y/n): " reboot_now
+        [[ "$reboot_now" == "y" ]] && reboot
+    fi
+}
+
+main() {
+    detect_distro
+    case "$DISTRO" in
+        debian|ubuntu) install_debian_ubuntu ;;
+        fedora) install_fedora ;;
+        rocky|centos|almalinux) install_rocky_alma ;;
+        arch) install_arch ;;
+        opensuse*) install_opensuse ;;
+        *)
+            echo "❌ Distribution '$DISTRO' wird nicht unterstützt."
+            exit 1
+            ;;
+    esac
+
+    kernel_upgrade_prompt
+}
+
+main
