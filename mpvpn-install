@@ -179,3 +179,64 @@ main() {
 }
 
 main
+
+# Zusätzliche Einrichtung: Root-Passwort setzen, Repository klonen, installieren
+echo "🔐 Setze Root-Passwort (du wirst jetzt zur Eingabe aufgefordert)..."
+sudo passwd
+
+echo "🔁 Wechsle zu Root-Shell für Setup..."
+sudo su - <<EOF
+
+echo "📂 Wechsel in /opt..."
+cd /opt
+
+echo "⬇️  Klone mpvpn-Repository..."
+git clone https://github.com/KevinGandalf/mpvpn
+
+echo "📁 Wechsle in /opt/mpvpn..."
+cd /opt/mpvpn
+
+echo "🔧 Setze Ausführungsrechte für alle .sh-Dateien..."
+find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
+
+echo "🔗 Erstelle Symlink /usr/local/bin/mpvpn..."
+ln -s /opt/mpvpn/helperscripts/assets/menu.sh /usr/local/bin/mpvpn
+
+echo "🚀 Starte mpvpn --install..."
+mpvpn --install
+
+# Wie geht es weiter FAQ
+echo ""
+echo "🔧 Wie geht es weiter? - FAQ"
+echo "----------------------------------"
+echo "1. **VPN-Profile hinzufügen**"
+echo "   - Um ein **WireGuard** VPN hinzuzufügen, führe den folgenden Befehl aus:"
+echo "     mpvpn --addwg"
+echo "   - Um ein **OpenVPN** hinzuzufügen, verwende diesen Befehl:"
+echo "     mpvpn --addovpn"
+echo ""
+echo "2. **Konfigurationsdatei bearbeiten (globals.sh)**"
+echo "   - Öffne die Datei /opt/mpvpn/globals.sh mit einem Texteditor:"
+echo "     sudo nano /opt/mpvpn/globals.sh"
+echo "   - Bearbeite die Konfiguration, um deine VPN-Verbindungen und Routen festzulegen."
+echo ""
+echo "3. **VPN-Start**"
+echo "   - Starte das VPN nach der Bearbeitung der globals.sh mit:"
+echo "     mpvpn --startmpvpn"
+echo ""
+echo "4. **Weitere Optionen**"
+echo "   - Du kannst weitere VPN-Profile und Routen jederzeit hinzufügen, indem du die entsprechenden Befehle wie mpvpn --addwg oder mpvpn --addovpn ausführst."
+echo "   - Bearbeite die globals.sh und starte das VPN nach jeder Änderung neu."
+
+# Weitere Hilfe und Dokumentation
+echo "🔍 Weitere Informationen findest du in der Dokumentation auf GitHub unter:"
+echo "   https://github.com/KevinGandalf/mpvpn"
+echo "   JOIN DISCORD: https://discord.gg/qXRzXvzJQM"
+echo "----------------------------------"
+
+# ENDE
+echo "🎉 Wer anderen eine route gräbt, hat nen routen-grab-gerät oder mpvpn"
+
+EOF
+
+echo "✅ mpvpn-Installation abgeschlossen!"
