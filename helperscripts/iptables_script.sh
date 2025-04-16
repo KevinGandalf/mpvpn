@@ -23,7 +23,7 @@ DISTRO=$(detect_distro)
 SAVEFILE=""
 
 case "$DISTRO" in
-    ubuntu|debian|rasbian)
+    ubuntu|debian|raspbian)
         SAVEFILE="/etc/iptables/rules.v4"
         ;;
     centos|rhel|almalinux|rocky)
