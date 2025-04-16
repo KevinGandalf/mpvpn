@@ -1,4 +1,14 @@
 ![MPVPN Logo](mpvpn_logo_klein.png)
+
+## Installationsscript:
+```bash
+#Ubuntu / Debian
+apt install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
+
+#Almalinux, RHEL, Rocky, CentOS etc.
+dnf install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
+```
+
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20the%20Community-blue?style=for-the-badge)](https://discord.gg/qXRzXvzJQM)
 
 
@@ -22,17 +32,6 @@ Es installiert folgende Pakete:
 Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscripts/startup`.
 
 ## Installation
-
-## Installationsscript:
-```bash
-#Ubuntu / Debian
-apt install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
-
-#Almalinux, RHEL, Rocky, CentOS etc.
-dnf install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
-```
-
-
 1. Ein paar dinge vorab erledigen und klonen des Repository:
     ```bash
     sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
