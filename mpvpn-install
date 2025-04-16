@@ -37,11 +37,11 @@ check_iproute2() {
 }
 
 install_common_tools_debian() {
-    apt install -y curl wget git iptables net-tools nano rsyslog jq dnsutils dialog wireguard-tools
+    apt update && apt upgrade -y && apt install -y curl wget git iptables net-tools nano rsyslog jq dnsutils dialog wireguard-tools
 }
 
 install_common_tools_rpm() {
-    dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools
+    dnf update && dnf upgrade - && dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools
 }
 
 install_common_tools_arch() {
