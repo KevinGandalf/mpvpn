@@ -1,5 +1,5 @@
 ![MPVPN Logo](mpvpn_logo_klein.png)
-[![Join our Discord](https://img.shields.io/discord/PK4jdyUd?label=Discord&logo=discord&style=for-the-badge)](https://discord.gg/PK4jdyUd)
+[![Join our Discord](https://img.shields.io/discord/PK4jdyUd?label=Discord&logo=discord&style=for-the-badge)](https://discord.gg/qXRzXvzJQM)
 
 # mpvpn
 
@@ -24,8 +24,13 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 
 ## Installationsscript:
 ```bash
+#Ubuntu / Debian
 apt install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
+
+#Almalinux, RHEL, Rocky, CentOS etc.
+dnf install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
 ```
+
 
 1. Ein paar dinge vorab erledigen und klonen des Repository:
     ```bash
