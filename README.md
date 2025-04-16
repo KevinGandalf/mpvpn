@@ -22,6 +22,11 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 
 ## Installation
 
+## Installationsscript:
+```bash
+apt install -y wget && wget -O - -q https://kevingandalf.github.io/install-mvpn | bash
+```
+
 1. Ein paar dinge vorab erledigen und klonen des Repository:
     ```bash
     sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
