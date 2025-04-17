@@ -3,10 +3,10 @@
 ## Installationsscript:
 ```bash
 #Ubuntu / Debian
-apt install -y wget && wget -O - -q https://kevingandalf.github.io/mpvpn/mpvpn-install | bash
+sudo apt install wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
 
 #Almalinux, RHEL, Rocky, CentOS etc.
-dnf install -y wget && wget -O - -q https://kevingandalf.github.io/mpvpn/mpvpn-install | bash
+dnf install -y wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
 ```
 
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20the%20Community-blue?style=for-the-badge)](https://discord.gg/qXRzXvzJQM)
