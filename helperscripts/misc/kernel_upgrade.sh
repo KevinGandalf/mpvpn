@@ -3,58 +3,79 @@
 update_to_kernel6() {
     echo "🔍 Erkenne Distribution..."
 
-    if [ -f /etc/debian_version ]; then
-        echo "➡️  Debian/Ubuntu erkannt."
-        echo "🛠️  Füge Backports oder Mainline-Kernel-Repo hinzu..."
+    # Lade OS-Info
+    source /etc/os-release
+    DISTRO_ID=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+    DISTRO_NAME=$NAME
 
-        apt update
-        apt install -y wget gnupg software-properties-common
+    echo "➡️ Erkannt: $DISTRO_NAME"
 
-        if grep -iq "ubuntu" /etc/os-release; then
-            echo "📦 Ubuntu: Installiere mainline Kernel Installer..."
-            add-apt-repository -y ppa:cappelikan/ppa
+    case "$DISTRO_ID" in
+        debian|ubuntu)
+            echo "🛠️  Debian/Ubuntu basiert – Kernel Upgrade über Backports oder Mainline"
+
             apt update
-            apt install -y mainline
-            echo "✅ Starte das Tool mit 'mainline' und wähle Kernel 6.x aus."
-        else
-            echo "⚠️ Für Debian empfiehlt sich ein manuelles Upgrade via backports oder mainline.debian.org."
-            echo "Siehe: https://wiki.debian.org/DebianKernel"
-        fi
+            apt install -y wget gnupg software-properties-common
 
-    elif [ -f /etc/fedora-release ]; then
-        echo "➡️ Fedora erkannt."
-        dnf install -y kernel-core kernel-devel kernel-headers
-        dnf upgrade --refresh -y
-        echo "✅ Kernel 6.x wurde installiert oder aktualisiert."
+            if [[ "$DISTRO_ID" == "ubuntu" ]]; then
+                echo "📦 Ubuntu: Installiere mainline Kernel Installer..."
+                add-apt-repository -y ppa:cappelikan/ppa
+                apt update
+                apt install -y mainline
+                echo "✅ Starte das Tool mit 'mainline' und wähle Kernel 6.x aus."
+            elif [[ -f /boot/firmware/config.txt || "$DISTRO_NAME" == *"Raspbian"* ]]; then
+                echo "🍓 Raspbian/Raspberry Pi erkannt."
+                echo "⚠️  Das Kernel-Upgrade erfolgt über das Raspberry Pi OS Tool 'rpi-update'."
+                echo "👉 Installiere mit:"
+                echo "    sudo apt install rpi-update"
+                echo "    sudo rpi-update"
+                echo "    sudo reboot"
+                echo "🔴 Achtung: 'rpi-update' installiert *experimentelle* Kernel-Versionen!"
+            else
+                echo "📄 Debian: Manuelles Upgrade empfohlen – siehe:"
+                echo "🔗 https://wiki.debian.org/DebianKernel"
+            fi
+            ;;
 
-    elif [ -f /etc/rocky-release ] || [ -f /etc/almalinux-release ]; then
-        echo "➡️ Rocky/AlmaLinux erkannt."
-        yum install -y https://www.elrepo.org/elrepo-release-9.el9.elrepo.noarch.rpm
-        yum install -y --enablerepo=elrepo-kernel kernel-ml kernel-ml-devel
-        grub2-set-default 0
-        echo "✅ Kernel 6.x wurde installiert und als Standard gesetzt."
+        fedora)
+            echo "🛠️ Fedora: Kernel-Paket wird aktualisiert"
+            dnf install -y kernel-core kernel-devel kernel-headers
+            dnf upgrade --refresh -y
+            echo "✅ Kernel 6.x wurde installiert oder aktualisiert."
+            ;;
 
-    elif [ -f /etc/arch-release ]; then
-        echo "➡️ Arch Linux erkannt."
-        pacman -Syu --noconfirm
-        echo "✅ Arch Linux wurde aktualisiert (Kernel 6.x ist Standard)."
+        rocky|almalinux)
+            echo "🛠️ Rocky/AlmaLinux: ELRepo wird genutzt"
+            yum install -y https://www.elrepo.org/elrepo-release-9.el9.elrepo.noarch.rpm
+            yum install -y --enablerepo=elrepo-kernel kernel-ml kernel-ml-devel
+            grub2-set-default 0
+            echo "✅ Kernel 6.x wurde installiert und als Standard gesetzt."
+            ;;
 
-    elif grep -qi "opensuse" /etc/os-release; then
-        echo "➡️ openSUSE erkannt."
-        zypper ar -f https://download.opensuse.org/repositories/Kernel:/stable/standard/ kernel-stable
-        zypper refresh
-        zypper install --allow-vendor-change -y kernel-default
-        grub2-set-default 0
-        echo "✅ Kernel 6.x aus Kernel:stable installiert und gesetzt."
+        arch)
+            echo "🛠️ Arch Linux: Update auf neuesten Kernel"
+            pacman -Syu --noconfirm
+            echo "✅ Arch Linux wurde aktualisiert (Kernel 6.x ist Standard)."
+            ;;
 
-    else
-        echo "❌ Distribution nicht unterstützt für automatisches Kernel-Upgrade."
-        exit 1
-    fi
+        opensuse*)
+            echo "🛠️ openSUSE: Kernel:stable Repository wird verwendet"
+            zypper ar -f https://download.opensuse.org/repositories/Kernel:/stable/standard/ kernel-stable
+            zypper refresh
+            zypper install --allow-vendor-change -y kernel-default
+            grub2-set-default 0
+            echo "✅ Kernel 6.x aus Kernel:stable installiert und gesetzt."
+            ;;
+
+        *)
+            echo "❌ Distribution '$DISTRO_ID' wird nicht automatisch unterstützt."
+            exit 1
+            ;;
+    esac
 
     echo ""
     read -p "🔁 Möchtest du jetzt neu starten, um den neuen Kernel zu aktivieren? (y/n): " do_reboot
-    if [[ "$do_reboot" == "y" || "$do_reboot" == "Y" ]]; then
+    if [[ "$do_reboot" =~ ^[Yy]$ ]]; then
         echo "♻️ Starte System neu..."
         reboot
     else
@@ -62,4 +83,5 @@ update_to_kernel6() {
     fi
 }
 
+# Aufruf
 update_to_kernel6
