@@ -182,7 +182,7 @@ main
 
 # Zusätzliche Einrichtung: Root-Passwort setzen, Repository klonen, installieren
 echo "🔐 Setze Root-Passwort (du wirst jetzt zur Eingabe aufgefordert)..."
-sudo passwd
+passwd
 
 echo "🔁 Wechsle zu Root-Shell für Setup..."
 sudo su - <<EOF
