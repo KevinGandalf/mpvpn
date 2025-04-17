@@ -30,10 +30,12 @@ UPCOMING:
   - Automatischer Unmount nachdem alle notwendigen Scripte ausgeführt und Verbindungen initiiert worden sind
   - Deaktivierung aller relevanten Systembefehle wie ip route, iptables etc. nach der Aktivierung des Stealthmodes
   - Systemweites Logging wird deaktiviert
-    https://github.com/KevinGandalf/mpvpn-mod-stealth
+    
+    [https://github.com/KevinGandalf/mpvpn-mod-stealth](https://github.com/KevinGandalf/mpvpn-mod-stealth)
+
 - Streaming-Modus: Selektives Routing basierend auf Ziel-ASNs oder Diensten (z. B. Netflix, Gaming), gesteuert über konfigurierbare Regeln.
   - DAITA-Kompatibilität: Routing einzelner Domains oder Dienste gezielt über bestimmte VPNs – automatisch und lernfähig.
-    https://github.com/KevinGandalf/mpvpn/tree/testing/beta
+    [https://github.com/KevinGandalf/mpvpn/tree/testing/beta](https://github.com/KevinGandalf/mpvpn/tree/testing/beta)
 
 ## Anforderungen
 
