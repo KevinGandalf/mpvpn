@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 check_and_disable_ufw() {
@@ -27,7 +26,7 @@ check_iproute2() {
     if ! command -v ip >/dev/null 2>&1; then
         echo "⚠️  iproute2 fehlt. Versuche Installation..."
         case "$DISTRO" in
-            debian|ubuntu) apt install -y iproute2 ;;
+            debian|ubuntu|raspbian) apt install -y iproute2 ;;
             fedora|rocky|centos|almalinux) dnf install -y iproute ;;
             arch) pacman -S --noconfirm iproute2 ;;
             opensuse) zypper install -y iproute2 ;;
@@ -41,15 +40,15 @@ install_common_tools_debian() {
 }
 
 install_common_tools_rpm() {
-    dnf update && dnf upgrade - && dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools bc
+    dnf update -y && dnf upgrade -y && dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools bc
 }
 
 install_common_tools_arch() {
-    pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng jq bind-tools dialog wireguard-tools bc
+    pacman -Syu --noconfirm && pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng jq bind-tools dialog wireguard-tools bc
 }
 
 install_common_tools_suse() {
-    zypper install -y curl wget git iptables net-tools nano syslog-ng jq bind-utils dialog wireguard-tools bc
+    zypper refresh && zypper update -y && zypper install -y curl wget git iptables net-tools nano syslog-ng jq bind-utils dialog wireguard-tools bc
 }
 
 install_iptables_alternative_debian() {
@@ -146,8 +145,13 @@ install_opensuse() {
 }
 
 detect_distro() {
-    source /etc/os-release
-    DISTRO=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+    if [ -f /etc/os-release ]; then
+        source /etc/os-release
+        DISTRO=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+    else
+        echo "❌ Kann Distribution nicht erkennen - /etc/os-release nicht gefunden"
+        exit 1
+    fi
 }
 
 kernel_upgrade_prompt() {
@@ -167,8 +171,8 @@ main() {
         debian|ubuntu|raspbian) install_debian_ubuntu ;;
         fedora) install_fedora ;;
         rocky|centos|almalinux) install_rocky_alma ;;
-        arch) install_arch ;;
-        opensuse*) install_opensuse ;;
+        arch|archlinux) install_arch ;;
+        opensuse*|sles) install_opensuse ;;
         *)
             echo "❌ Distribution '$DISTRO' wird nicht unterstützt."
             exit 1
@@ -178,14 +182,15 @@ main() {
     kernel_upgrade_prompt
 }
 
+# Main execution
 main
 
-# Zusätzliche Einrichtung: Root-Passwort setzen (nur interaktiv)
+# Post-install setup
 echo "🔐 Setze Root-Passwort (optional)..."
 if [ -t 0 ]; then
     read -p "Möchtest du das Root-Passwort ändern? (y/n): " change_password
     if [[ "$change_password" == "y" ]]; then
-        sudo passwd
+        passwd
     else
         echo "ℹ️  Root-Passwort bleibt unverändert."
     fi
@@ -193,60 +198,48 @@ else
     echo "ℹ️  Nicht-interaktiver Modus: Überspringe Root-Passwort-Änderung."
 fi
 
-# Rest des Scripts (Repository klonen, etc.)
-echo "🔁 Wechsle zu Root-Shell für Setup..."
-sudo su
-
-echo "📂 Wechsel in /opt..."
-cd /opt
+echo "📂 Installiere mpVPN..."
+sudo mkdir -p /opt
+cd /opt || exit 1
 
 echo "⬇️  Klone mpvpn-Repository..."
-git clone https://github.com/KevinGandalf/mpvpn
+sudo git clone https://github.com/KevinGandalf/mpvpn.git || {
+    echo "❌ Git clone fehlgeschlagen"
+    exit 1
+}
 
 echo "📁 Wechsle in /opt/mpvpn..."
-cd /opt/mpvpn
+cd /opt/mpvpn || exit 1
 
-echo "🔧 Setze Ausführungsrechte für alle .sh-Dateien..."
-find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
+echo "🔧 Setze Berechtigungen..."
+sudo find . -type f -name "*.sh" -exec chmod +x {} \;
 
-echo "🔗 Erstelle Symlink /usr/local/bin/mpvpn..."
-ln -s /opt/mpvpn/helperscripts/assets/menu.sh /usr/local/bin/mpvpn
+echo "🔗 Erstelle Symlink..."
+sudo ln -sf "$(pwd)/helperscripts/assets/menu.sh" /usr/local/bin/mpvpn
 
-echo "🚀 Starte mpvpn --install..."
-mpvpn --install
+echo "🚀 Starte Installation..."
+sudo ./helperscripts/assets/menu.sh --install || {
+    echo "❌ Installation fehlgeschlagen"
+    exit 1
+}
 
-# Wie geht es weiter FAQ
-echo ""
-echo "🔧 Wie geht es weiter? - FAQ"
-echo "----------------------------------"
-echo "1. **VPN-Profile hinzufügen**"
-echo "   - Um ein **WireGuard** VPN hinzuzufügen, führe den folgenden Befehl aus:"
-echo "     mpvpn --addwg"
-echo "   - Um ein **OpenVPN** hinzuzufügen, verwende diesen Befehl:"
-echo "     mpvpn --addovpn"
-echo ""
-echo "2. **Konfigurationsdatei bearbeiten (globals.sh)**"
-echo "   - Öffne die Datei /opt/mpvpn/globals.sh mit einem Texteditor:"
-echo "     sudo nano /opt/mpvpn/globals.sh"
-echo "   - Bearbeite die Konfiguration, um deine VPN-Verbindungen und Routen festzulegen."
-echo ""
-echo "3. **VPN-Start**"
-echo "   - Starte das VPN nach der Bearbeitung der globals.sh mit:"
-echo "     mpvpn --startmpvpn"
-echo ""
-echo "4. **Weitere Optionen**"
-echo "   - Du kannst weitere VPN-Profile und Routen jederzeit hinzufügen, indem du die entsprechenden Befehle wie mpvpn --addwg oder mpvpn --addovpn ausführst."
-echo "   - Bearbeite die globals.sh und starte das VPN nach jeder Änderung neu."
+# Post-install info
+cat <<EOF
 
-# Weitere Hilfe und Dokumentation
-echo "🔍 Weitere Informationen findest du in der Dokumentation auf GitHub unter:"
-echo "   https://github.com/KevinGandalf/mpvpn"
-echo "   JOIN DISCORD: https://discord.gg/qXRzXvzJQM"
-echo "----------------------------------"
+🔧 mpVPN erfolgreich installiert! Nächste Schritte:
+----------------------------------
+1. VPN-Profile hinzufügen:
+   - WireGuard: mpvpn --addwg
+   - OpenVPN: mpvpn --addovpn
 
-# ENDE
-echo "🎉 Wer anderen eine route gräbt, hat nen routen-grab-gerät oder mpvpn"
+2. Konfiguration bearbeiten:
+   sudo nano /opt/mpvpn/globals.sh
 
+3. VPN starten:
+   mpvpn --startmpvpn
+
+📖 Dokumentation: https://github.com/KevinGandalf/mpvpn
+💬 Discord: https://discord.gg/qXRzXvzJQM
+----------------------------------
+🎉 Installation abgeschlossen! Viel Erfolg mit mpVPN!
 EOF
-
-echo "✅ mpvpn-Installation abgeschlossen!"
