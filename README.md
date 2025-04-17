@@ -53,6 +53,7 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 ## Installation
 1. Ein paar dinge vorab erledigen und klonen des Repository:
 Das Script führt komfortabel durch den gesamten Installationsprozes. Im Anschluss ist es möglich Wireguard und OpenVPN Konfiguration per Drag&Drop hinzuzufügen.
+
 ```bash
 #Ubuntu / Debian
 sudo apt install wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
@@ -61,6 +62,7 @@ sudo apt install wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.i
 dnf install -y wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
 ```
 oder
+
 ```bash
 sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
 cd /opt
