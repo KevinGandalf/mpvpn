@@ -25,7 +25,7 @@ check_iproute2() {
     if ! command -v ip >/dev/null 2>&1; then
         echo "⚠️  iproute2 ist nicht installiert. Versuche Installation..."
         case "$DISTRO" in
-            debian|ubuntu) apt install -y iproute2 ;;
+            debian|ubuntu|raspbian) apt install -y iproute2 ;;
             fedora|rocky|centos|almalinux) dnf install -y iproute ;;
             arch) pacman -S --noconfirm iproute2 ;;
             opensuse) zypper install -y iproute2 ;;
