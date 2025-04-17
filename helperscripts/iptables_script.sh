@@ -7,22 +7,23 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# System Detection
-detect_distro() {
-    if command -v lsb_release &>/dev/null; then
-        distro=$(lsb_release -si)
-    elif [[ -f /etc/os-release ]]; then
-        distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
-    else
-        distro="unknown"
-    fi
-    echo "$distro"
-}
+# Lade Distributionserkennung
+source /etc/os-release
+DISTRO_ID=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+DISTRO_NAME=$(echo "$NAME" | tr '[:upper:]' '[:lower:]')
 
-DISTRO=$(detect_distro)
-SAVEFILE=""
+# 🧠 Erkenne Raspbian genauer
+if echo "$DISTRO_NAME" | grep -q "raspbian"; then
+    DISTRO_ID="raspbian"
+fi
 
-case "$DISTRO" in
+# 🔍 Zusätzlicher Check für Raspberry Pi OS
+if [[ -f /boot/firmware/config.txt ]]; then
+    DISTRO_ID="raspbian"
+fi
+
+# 💾 Auswahl des iptables-Speicherpfads
+case "$DISTRO_ID" in
     ubuntu|debian|raspbian)
         SAVEFILE="/etc/iptables/rules.v4"
         ;;
@@ -30,10 +31,11 @@ case "$DISTRO" in
         SAVEFILE="/etc/sysconfig/iptables"
         ;;
     *)
-        echo "⚠️  Distribution '$DISTRO' nicht erkannt. Verwende /etc/sysconfig/iptables als Fallback."
+        echo "⚠️  Distribution '$DISTRO_ID' nicht erkannt. Verwende /etc/sysconfig/iptables als Fallback."
         SAVEFILE="/etc/sysconfig/iptables"
         ;;
 esac
+
 
 VPN_INTERFACES=("${WGVPN_LIST[@]}" "${OVPN_LIST[@]}")
 
