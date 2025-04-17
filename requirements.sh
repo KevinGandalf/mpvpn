@@ -154,7 +154,7 @@ detect_distro() {
 main() {
     detect_distro
     case "$DISTRO" in
-        debian|ubuntu) install_debian_ubuntu ;;
+        debian|ubuntu|raspbian) install_debian_ubuntu ;;
         fedora) install_fedora ;;
         rocky|centos|almalinux) install_rocky_alma ;;
         arch) install_arch ;;
