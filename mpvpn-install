@@ -180,9 +180,18 @@ main() {
 
 main
 
-# Zusätzliche Einrichtung: Root-Passwort setzen, Repository klonen, installieren
-echo "🔐 Setze Root-Passwort (du wirst jetzt zur Eingabe aufgefordert)..."
-passwd
+echo "🔐 Setze Root-Passwort (optional)..."
+if [ -t 0 ]; then
+    # Only ask for password change if running interactively
+    read -p "Möchtest du das Root-Passwort ändern? (y/n): " change_password
+    if [[ "$change_password" == "y" ]]; then
+        sudo passwd
+    else
+        echo "ℹ️  Root-Passwort bleibt unverändert."
+    fi
+else
+    echo "ℹ️  Nicht-interaktiver Modus: Überspringe Root-Passwort-Änderung."
+fi
 
 echo "🔁 Wechsle zu Root-Shell für Setup..."
 sudo su - <<EOF
