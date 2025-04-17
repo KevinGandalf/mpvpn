@@ -14,9 +14,26 @@ dnf install -y wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/
 
 # mpvpn
 
-**mpvpn** ist ein Script zur Verwaltung von Multipath-VPN-Verbindungen (WireGuard und OpenVPN). Es erlaubt das einfache Starten und Verwalten von VPN-Verbindungen sowie die Konfiguration von Routing-Tabellen.
+**mpvpn** ist ein flexibles, modulares System zur dynamischen Verwaltung und Nutzung mehrerer VPN-Gateways parallel. Es wurde entwickelt, um Datenschutz, Ausfallsicherheit und Routing-Kontrolle auf ein neues Level zu bringen – ideal für Umgebungen die den Einsatz verschiedener VPN Anbieter benötigen.
 
-Dafür muss das Script mpvpn.sh ausgeführt werden.
+Funktionen im Überblick:
+- Multipath-Routing: Nutzt mehrere VPN-Verbindungen gleichzeitig über iproute2, mit automatischem Failover und dynamischer Gewichtung.
+- Loadbalancing des gesamten Traffics über alle VPN Verbindungen
+- VPN-Gateway-Überwachung: Permanente Prüfung der Verbindungen via ICMP (Ping), automatische Deaktivierung fehlerhafter Pfade aus der Routingtabelle.
+- Killswitch-Integration: Aktiviert iptables-Regeln, um bei VPN-Ausfall jeglichen Traffic zu blockieren – schützt zuverlässig vor Datenlecks.
+- Split-DNS
+
+UPCOMING:
+- Stealthmode: Schützt deine Privatsspähre auch in Fällen von direkter Kompromittierung - keine Nachvollziehbaren Daten ohne Zugriff auf den LUKS Container.
+  - Ablage der gesamten Configs in einem verschlüsselten LUKS Container
+  - Manuelles Mouting zum Start von MPVPN notwendig
+  - Automatischer Unmount nachdem alle notwendigen Scripte ausgeführt und Verbindungen initiiert worden sind
+  - Deaktivierung aller relevanten Systembefehle wie ip route, iptables etc. nach der Aktivierung des Stealthmodes
+  - Systemweites Logging wird deaktiviert
+    https://github.com/KevinGandalf/mpvpn-mod-stealth
+- Streaming-Modus: Selektives Routing basierend auf Ziel-ASNs oder Diensten (z. B. Netflix, Gaming), gesteuert über konfigurierbare Regeln.
+  - DAITA-Kompatibilität: Routing einzelner Domains oder Dienste gezielt über bestimmte VPNs – automatisch und lernfähig.
+    https://github.com/KevinGandalf/mpvpn/tree/testing/beta
 
 ## Anforderungen
 
@@ -33,14 +50,23 @@ Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscr
 
 ## Installation
 1. Ein paar dinge vorab erledigen und klonen des Repository:
-    ```bash
-    sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
-    cd /opt
-    #Root Passwort festlegen
-    sudo passwd
-    su
-    git clone https://github.com/KevinGandalf/mpvpn
-    ```
+Das Script führt komfortabel durch den gesamten Installationsprozes. Im Anschluss ist es möglich Wireguard und OpenVPN Konfiguration per Drag&Drop hinzuzufügen.
+```bash
+#Ubuntu / Debian
+sudo apt install wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
+
+#Almalinux, RHEL, Rocky, CentOS etc.
+dnf install -y wget && sudo bash -c "$(wget -qO- https://kevingandalf.github.io/mpvpn/mpvpn-install)"
+```
+oder
+```bash
+sudo apt update && sudo apt upgrade -y && sudo apt install -y sudo git curl wget
+cd /opt
+#Root Passwort festlegen
+sudo passwd
+su
+git clone https://github.com/KevinGandalf/mpvpn
+```
 
 2. Mache das Script ausführbar:
     ```bash
