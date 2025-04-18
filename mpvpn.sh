@@ -92,6 +92,6 @@ tail -n 10 /var/log/vpn_ip_log.txt
 sleep 3
 echo "Einrichtung SplitDNS"
 /opt/mpvpn/helperscripts/splitdns/get_streaming.sh
-/opt/mpvpn/helperscripts/splitdns/get_splitdnsdomains.sh
+/opt/mpvpn/helperscripts/splitdns/get_splitdnsdomain.sh
 
 echo "...Have Fun!..."
