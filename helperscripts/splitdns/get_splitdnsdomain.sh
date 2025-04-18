@@ -4,6 +4,7 @@ source /opt/mpvpn/globals.sh
 # === Variablen ===
 LOGFILE="/var/log/splitdns_routing.log"
 STATUS_FILE="/opt/mpvpn/splitdns/statusdomain.txt"
+touch $STATUS_FILE
 
 # DNS-Server für die Auflösung
 DNS_SERVERS=(
