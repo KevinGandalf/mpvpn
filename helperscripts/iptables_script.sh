@@ -108,7 +108,8 @@ done
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
-iptables -A INPUT -p tcp -m multiport --dports 22,80,81,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp -m multiport --dports "$PORT_TCP" -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p udp --dport "$PORT_UDP" -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A INPUT -m limit --limit 5/min -j LOG --log-prefix "IPTables-DROP: " --log-level 4
 iptables -A INPUT -j DROP
 
