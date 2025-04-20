@@ -11,6 +11,10 @@ DEFAULT_SUBNET="192.168.1.0/24"
 #Standard Gateway (Router)
 DEFAULT_WANGW="192.168.1.1"
 
+#Freizugebende Ports 
+PORTS_TCP="22,53,80,443"
+PORTS_UDP="53"
+
 WG_CONF_DIR="/etc/wireguard"
 OVPN_CONF_DIR="/etc/openvpn"
 
