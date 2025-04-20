@@ -27,7 +27,7 @@ for entry in "${EXTRA_RT_TABLES[@]}"; do
     fi
 
     # Hier könnte man für jede Tabelle zusätzlich Routing-Regeln setzen, z.B.:
-    ip route add default via 192.168.10.1 dev $DEFAULT_LANIF table $table_number
+    ip route add default via $DEFAULT_WANGW dev $DEFAULT_LANIF table $table_number
 
 done
 
