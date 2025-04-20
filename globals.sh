@@ -23,6 +23,16 @@ ENABLE_OVPN=false
 #ENABLE_OVPN=true, OpenVPN ist aktiviert.
 OVPN_LIST=("vpn5" "vpn6")
 
+# Wireguard DNS Verbindung je VPN
+# Zuweisung von benuterdefineirten DNS Server je nach Verbindung
+DNS_VPN1="10.0.0.1,91.231.153.2"		# azirevpn
+DNS_VPN2="100.64.0.7"      			# mullvad
+DNS_VPN3="10.0.254.24,10.0.254.10"		# ivpn
+DNS_VPN4="10.0.0.241,10.0.0.243"      		# pia
+#DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
+#DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
+
+
 # Extra Routing Tables
 EXTRA_RT_TABLES=(
     "100 clear"  # Diese Tabelle geht über den Standardrouter
