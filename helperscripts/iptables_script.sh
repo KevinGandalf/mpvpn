@@ -122,8 +122,8 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p tcp -m multiport --dports 22,80,81,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-iptables -A INPUT -i enp1s0 -p udp --dport 53 -s 192.168.10.0/24 -j ACCEPT
-iptables -A INPUT -i enp1s0 -p tcp --dport 53 -s 192.168.10.0/24 -j ACCEPT
+iptables -A INPUT -i $DEFAULT_LANIF -p udp --dport 53 -j ACCEPT
+iptables -A INPUT -i $DEFAULT_LANIF -p tcp --dport 53 -j ACCEPT
 iptables -A INPUT -m limit --limit 5/min -j LOG --log-prefix "IPTables-DROP: " --log-level 4
 iptables -A INPUT -j DROP
 
