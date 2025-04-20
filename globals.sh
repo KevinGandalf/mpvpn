@@ -13,6 +13,7 @@ DEFAULT_WANGW="192.168.1.1"
 
 #Freizugebende Ports 
 PORTS_TCP="22,53,80,443"
+# Zum Beispiel wenn Unbound genutzt wird
 PORTS_UDP="53"
 
 WG_CONF_DIR="/etc/wireguard"
@@ -32,6 +33,7 @@ OVPN_LIST=("vpn5" "vpn6")
 
 # Wireguard DNS Verbindung je VPN
 # Zuweisung von benuterdefineirten DNS Server je nach Verbindung
+# Beispiele:
 DNS_VPN1="10.0.0.1,91.231.153.2"		# azirevpn
 DNS_VPN2="100.64.0.7"      			# mullvad
 DNS_VPN3="10.0.254.24,10.0.254.10"		# ivpn
@@ -39,11 +41,30 @@ DNS_VPN4="10.0.0.241,10.0.0.243"      		# pia
 #DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
 #DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
 
+# Poor-Mans-VPN via ssh
+ENABLE_sSSH=false
+SSH_TARGET="ziel.example.com"
+SSH_EXTERNAL_PORT="1337"
+SSH_LOCAL_PORT="2225"
+SSH_CMD_OPTIONS="-q -C -N"
 
-# Extra Routing Tables
+#Unbound DNS
+# Um DNS Leaks zu vermeiden sollten immer
+# DNS Server der VPN Dienste genutzt werden!
+ENABLE_UNBOUND=false
+UNBOUND_AUTOSTART=false
+SET_UNBOUND_DNS=(
+"forward-zone:"
+ " name: ".""
+  "forward-addr: 1.1.1.1"      # cloudflare
+  "forward-addr: 8.8.8.8"      # google
+  "forward-addr: 100.64.0.7"   # mullvad
+  "forward-addr: 10.0.254.24"  # ivpn
+)
+
 EXTRA_RT_TABLES=(
     "100 clear"  # Diese Tabelle geht über den Standardrouter
-    "200 smtp"   # Diese Tabelle geht speziell für den Mailverkehr
+    "200 smtp"   # Diese Tabelle gilt speziell für den Mailverkehr
 )
 
 # Clients die das VPN Routing umgehen
