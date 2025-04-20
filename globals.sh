@@ -5,6 +5,9 @@ BASE_PATH="/opt/mpvpn"
 DEFAULT_LANIF="enp1s0" 
 #DEFAULT_LANIF=eth0
 
+#Standard Subnet
+DEFAULT_SUBNET="192.168.1.0/24"
+
 #Standard Gateway (Router)
 DEFAULT_WANGW="192.168.1.1"
 
