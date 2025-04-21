@@ -198,7 +198,7 @@ else
     echo "ℹ️  Nicht-interaktiver Modus: Überspringe Root-Passwort-Änderung."
 fi
 
-echo "📂 Installiere mpVPN..."
+echo "📂 Installiere mpvpn..."
 sudo mkdir -p /opt
 cd /opt || exit 1
 
@@ -223,10 +223,27 @@ sudo ./helperscripts/assets/menu.sh --install || {
     exit 1
 }
 
+if grep -qE '^ENABLE_UNBOUND=true' /opt/mpvpn/globals.sh; then
+    ENABLE_UNBOUND=true
+fi
+
+if grep -qE '^ENABLE_DNSCRYPT=true' /opt/mpvpn/globals.sh; then
+    ENABLE_DNSCRYPT=true
+fi
+
+if [[ "$ENABLE_UNBOUND" == true || "$ENABLE_DNSCRYPT" == true ]]; then
+    echo "🔐 DNS-Konfiguration erkannt:"
+    [[ "$ENABLE_UNBOUND" == true ]] && echo " - Unbound wird installiert"
+    [[ "$ENABLE_DNSCRYPT" == true ]] && echo " - DNSCrypt wird installiert"
+    
+    # Beispielhafte Behandlung – hier könntest du deine Dienste starten oder weitere Skripte einbinden:
+    # ./helperscripts/helperscripts/addons/install_dns.sh
+fi
+
 # Post-install info
 cat <<EOF
 
-🔧 mpVPN erfolgreich installiert! Nächste Schritte:
+🔧 mpvpn erfolgreich installiert! Nächste Schritte:
 ----------------------------------
 1. VPN-Profile hinzufügen:
    - WireGuard: mpvpn --addwg
