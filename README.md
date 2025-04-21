@@ -22,6 +22,9 @@ Funktionen im Überblick:
 - VPN-Gateway-Überwachung: Permanente Prüfung der Verbindungen via ICMP (Ping), automatische Deaktivierung fehlerhafter Pfade aus der Routingtabelle.
 - Killswitch-Integration: Aktiviert iptables-Regeln, um bei VPN-Ausfall jeglichen Traffic zu blockieren – schützt zuverlässig vor Datenlecks.
 - Split-DNS
+- Integration Unbound
+- Integration DNSCrypt
+- Socks5 over SSH
 
 UPCOMING:
 - Stealthmode: Schützt deine Privatsspähre auch in Fällen von direkter Kompromittierung - keine Nachvollziehbaren Daten ohne Zugriff auf den LUKS Container.
@@ -47,6 +50,8 @@ Es installiert folgende Pakete:
 - net-tools
 - wireguard
 - Bei Bedarf auch OpenVPN
+- Bei Bedarf Unbound
+- Bei Bedarf DNSCrypt
 
 Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscripts/startup`.
 
@@ -131,8 +136,9 @@ OVPN_LIST=("vpn5" "vpn6")
     Verfügbare Optionen für mpvpn:
       --startmpvpn : Startet MPVPN
       --install    : Installiert die Abhängigkeiten
-      --addwg      : Neue WireGuard-Verbindung hinzufügen.
+      --addwg      : Neue WireGuard-Verbindung hinzufügen
       --addovpn    : Neue OpenVPN-Verbindung hinzufügen.
+      --addsshsocks5: Socks5 over SSH Verbindung hinzufügen
       --list       : Alle Verbindungen anzeigen.
       --help       : Zeigt diese Hilfe an.
       --version    : Gibt die Version des Skripts aus.
