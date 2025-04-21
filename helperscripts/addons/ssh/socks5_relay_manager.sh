@@ -15,6 +15,18 @@ load_globals() {
     fi
 }
 
+# Funktion zum Erstellen eines SSH-Schlüssels, falls keiner vorhanden ist
+generate_ssh_key() {
+    if [[ ! -f "$SSH_PRIVATE_KEY_PATH" ]]; then
+        echo "🔑 Kein SSH-Schlüssel gefunden, erzeuge neuen SSH-Schlüssel..."
+        mkdir -p /root/.ssh
+        ssh-keygen -t rsa -b 4096 -f "$SSH_PRIVATE_KEY_PATH" -N ""
+        echo "✅ SSH-Schlüssel erstellt: $SSH_PRIVATE_KEY_PATH"
+    else
+        echo "ℹ️ SSH-Schlüssel bereits vorhanden: $SSH_PRIVATE_KEY_PATH"
+    fi
+}
+
 # Funktion zum Erstellen eines systemd-Services für jedes Relay
 create_systemd_service() {
     local SSH_TARGET=$1
@@ -63,5 +75,9 @@ start_all_relays() {
     done
 }
 
+# SSH-Schlüssel erzeugen (falls erforderlich)
+generate_ssh_key
+
+# Relays starten
 load_globals
 start_all_relays
