@@ -62,6 +62,14 @@ SET_UNBOUND_DNS=(
   "forward-addr: 10.0.254.24"  # ivpn
 )
 
+ENABLE_DNSCRYPT=false
+ENABLE_DNSCRYPTPROXY=false
+DNSCRYPT_AUTOSTART=false
+DNSCRYPT_SERVER_NAMES=("dnscrypt.eu-nl" "dnscrypt.eu-dk" "serbica")
+DNSCRYPT_REQUIRE_DNSSEC=true
+DNSCRYPT_REQUIRE_NOLOG=true
+DNSCRYPT_REQUIRE_NOFILTER=true
+
 EXTRA_RT_TABLES=(
     "100 clear"  # Diese Tabelle geht über den Standardrouter
     "200 smtp"   # Diese Tabelle gilt speziell für den Mailverkehr
