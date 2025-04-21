@@ -14,9 +14,9 @@ install_dependencies() {
     echo "Installiere notwendige Abhängigkeiten..."
     if [ -f /etc/debian_version ] || [ -f /etc/raspbian-release ]; then
         apt update
-        apt install -y build-essential libssl-dev libsodium-dev libev-dev libprotobuf-dev
+        apt install -y build-essential libssl-dev libsodium-dev libev-dev libprotobuf-dev unbound
     elif [ -f /etc/alpine-release ]; then
-        apk add --no-cache build-base libressl-dev libsodium-dev libev-dev
+        apk add --no-cache build-base libressl-dev libsodium-dev libev-dev unbound
     else
         echo "Unbekannte Distribution. Abbruch."
         exit 1
@@ -66,6 +66,28 @@ configure_dnscrypt_proxy() {
     systemctl restart dnscrypt-proxy
 }
 
+# Konfiguriere Unbound
+configure_unbound() {
+    if [[ "$ENABLE_DNSCRYPT" == "true" && "$ENABLE_UNBOUND" == "true" ]]; then
+        echo "Konfiguriere Unbound..."
+
+        # Ändere die Unbound-Konfiguration, um dnscrypt-proxy als Forwarder zu nutzen
+        local unbound_config="/etc/unbound/unbound.conf.d/dnscrypt.conf"
+
+        echo "server:" > "$unbound_config"
+        echo "  forward-zone:" >> "$unbound_config"
+        echo "    name: \".\"" >> "$unbound_config"
+        echo "    forward-addr: 127.0.0.1@5353" >> "$unbound_config"  # dnscrypt-proxy läuft auf Port 5353
+
+        # Unbound neustarten, damit die Konfiguration aktiv wird
+        systemctl restart unbound
+
+        echo "Unbound erfolgreich konfiguriert."
+    else
+        echo "ENABLE_DNSCRYPT und/oder ENABLE_UNBOUND sind nicht auf true gesetzt. Unbound wird nicht konfiguriert."
+    fi
+}
+
 # Setze DNS-Server für das System
 set_dns_server() {
     local dns_server=$1
@@ -88,9 +110,10 @@ install_dnscrypt_proxy
 # Konfiguriere dnscrypt-proxy
 configure_dnscrypt_proxy
 
-# Setze DNS-Server
-for server in "${DNSCRYPT_SERVER_NAMES[@]}"; do
-    set_dns_server "$server"
-done
+# Installiere Unbound und konfiguriere es, um dnscrypt-proxy zu verwenden
+configure_unbound
 
-echo "dnscrypt-proxy erfolgreich installiert und konfiguriert."
+# Setze DNS-Server (der Unbound-Server, der auf Port 53 lauscht)
+set_dns_server "127.0.0.1"
+
+echo "Unbound und dnscrypt-proxy erfolgreich installiert und konfiguriert."
