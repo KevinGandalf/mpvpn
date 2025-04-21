@@ -14,7 +14,7 @@ echo "🚦 Starte Installation des DNS-Stacks..."
 # UNBOUND installieren, wenn aktiviert
 if [[ "$ENABLE_UNBOUND" == "true" ]]; then
     echo "📦 Installiere Unbound..."
-    bash /opt/mpvpn/helperscripts/addons/install_unbound.sh
+    bash /opt/mpvpn/helperscripts/addons/dns/install_unbound.sh
 else
     echo "🔕 Unbound ist deaktiviert (ENABLE_UNBOUND=false)"
 fi
@@ -22,7 +22,7 @@ fi
 # DNSCRYPT installieren, wenn aktiviert
 if [[ "$ENABLE_DNSCRYPT" == "true" ]]; then
     echo "📦 Installiere DNSCrypt..."
-    bash /opt/mpvpn/helperscripts/addons/install_dnscrypt.sh
+    bash /opt/mpvpn/helperscripts/addons/dns/install_dnscrypt.sh
 else
     echo "🔕 DNSCrypt ist deaktiviert (ENABLE_DNSCRYPT=false)"
 fi
@@ -30,7 +30,7 @@ fi
 # Wenn BEIDE aktiviert sind, DNS-Kette konfigurieren
 if [[ "$ENABLE_UNBOUND" == "true" && "$ENABLE_DNSCRYPT" == "true" ]]; then
     echo "🔗 Konfiguriere DNS-Verkettung (Unbound → DNSCrypt)..."
-    bash /opt/mpvpn/helperscripts/addons/configure_dns_chain.sh
+    bash /opt/mpvpn/helperscripts/addons/dns/configure_dns_chain.sh
 else
     echo "ℹ️  DNS-Kette wird nicht konfiguriert – mindestens ein Dienst ist deaktiviert."
 fi
