@@ -98,4 +98,5 @@ set_multipath_route() {
 }
 
 # Starte die Funktion zum Setzen der Multipath-Route
+init_kernel_params
 set_multipath_route
