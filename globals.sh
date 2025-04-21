@@ -49,6 +49,7 @@ SSH_RELAY_LIST=(
     "ziel3.example.com 1339 2227"
 )
 SSH_CMD_OPTIONS="-q -C -N"
+SSH_PRIVATE_KEY_PATH="/root/.ssh/id_rsa"
 
 #Unbound DNS
 # Um DNS Leaks zu vermeiden sollten immer
