@@ -18,14 +18,34 @@ add_ssh_socks5_tunnel() {
     echo "Aktualisiere globals.sh mit der neuen SSH SOCKS5-Verbindung..."
 
     # Stelle sicher, dass ENABLE_SSH auf true gesetzt ist
-    sed -i '/ENABLE_SSH=false/c\ENABLE_SSH=true' /opt/mpvpn/globals.sh
+    sed -i '/ENABLE_SSH=false/c\ENABLE_SSH=true' "$BASE_PATH/globals.sh"
 
     # Füge das neue Ziel, den externen und den lokalen Port zum jeweiligen Array hinzu
-    sed -i "/SSH_RELAY_LIST/ s/\(SSH_RELAY_LIST=(.*\))/\1\n    \"$target\",/" /opt/mpvpn/globals.sh
-    sed -i "/SSH_RELAY_EXTERNAL_PORTS/ s/\(SSH_RELAY_EXTERNAL_PORTS=(.*\))/\1\n    \"$external_port\",/" /opt/mpvpn/globals.sh
-    sed -i "/SSH_RELAY_LOCAL_PORTS/ s/\(SSH_RELAY_LOCAL_PORTS=(.*\))/\1\n    \"$local_port\",/" /opt/mpvpn/globals.sh
+    sed -i "/SSH_RELAY_LIST/ s/\(SSH_RELAY_LIST=(.*\))/\1\n    \"$target\",/" "$BASE_PATH/globals.sh"
+    sed -i "/SSH_RELAY_EXTERNAL_PORTS/ s/\(SSH_RELAY_EXTERNAL_PORTS=(.*\))/\1\n    \"$external_port\",/" "$BASE_PATH/globals.sh"
+    sed -i "/SSH_RELAY_LOCAL_PORTS/ s/\(SSH_RELAY_LOCAL_PORTS=(.*\))/\1\n    \"$local_port\",/" "$BASE_PATH/globals.sh"
 
     echo "globals.sh wurde erfolgreich aktualisiert!"
+}
+
+add_iptables_rules() {
+    local SSH_LOCAL_PORT=$1
+
+    echo "🔧 Hinzufügen von iptables-Regeln für Port $SSH_LOCAL_PORT"
+
+    # Erlaube Verbindungen zu dem lokalen Port (Zulassen von eingehendem Traffic)
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -j ACCEPT
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -j ACCEPT
+
+    # Optional: Weitere Regeln für IP-Quellen (z.B. localhost oder bestimmte IPs)
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -s 127.0.0.1 -j ACCEPT
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -s 127.0.0.1 -j ACCEPT
+
+    # Optional: Verbindung aus dem öffentlichen Internet blockieren
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -j DROP
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -j DROP
+
+    echo "✅ iptables-Regeln für Port $SSH_LOCAL_PORT hinzugefügt."
 }
 
 # Funktion, um den SSH Tunnel zu starten
@@ -59,6 +79,7 @@ start_ssh_socks5_tunnel() {
 configure_ssh_socks5() {
     add_ssh_socks5_tunnel
     start_ssh_socks5_tunnel
+    add_iptables_rules
 }
 
 # Aufruf der Funktion zur Konfiguration
