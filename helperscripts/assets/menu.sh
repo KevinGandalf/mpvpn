@@ -8,6 +8,8 @@ show_help() {
     echo "  --addwg      : Neue WireGuard-Verbindung hinzufügen."
     echo "  --addovpn    : Neue OpenVPN-Verbindung hinzufügen."
     echo "  --list       : Alle Verbindungen anzeigen."
+    echo "  --backup     : Erstellt ein Backup, wenn aktiviert"
+    echo "  --restore    : Stellt ein Backup wieder her"
     echo "  --help       : Zeigt diese Hilfe an."
     echo "  --version    : Gibt die Version des Skripts aus."
 }
@@ -49,6 +51,12 @@ elif [[ "$1" == "--addsssocks5" ]]; then
 elif [[ "$1" == "--list" ]]; then
     # Befehl für das Anzeigen der aktiven Verbindungen
     list_active_connections
+elif [[ "$1" == "--backup" ]]; then
+    # Befehl für das Erstellen von Backups
+    /opt/mpvpn/helperscripts/assets/addbackup.sh
+elif [[ "$1" == "--restore" ]]; then
+    # Befehl für das Wiederherstellen von Backups
+    /opt/mpvpn/helperscripts/assets/restorebackup.sh
 elif [[ "$1" == "--help" ]]; then
     # Hilfe anzeigen
     show_help
