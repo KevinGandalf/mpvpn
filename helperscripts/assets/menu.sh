@@ -43,6 +43,9 @@ elif [[ "$1" == "--addwg" ]]; then
 elif [[ "$1" == "--addopenvpn" ]]; then
     # Befehl für OpenVPN-Verbindung hinzufügen
     /opt/mpvpn/helperscripts/assets/addopenvpnconnection.sh
+elif [[ "$1" == "--addsssocks5" ]]; then
+    # Befehl zum Hinzufügen eines SSH SOCKS5-Tunnels
+    /opt/mpvpn/helperscripts/assets/addsshsocks5.sh
 elif [[ "$1" == "--list" ]]; then
     # Befehl für das Anzeigen der aktiven Verbindungen
     list_active_connections
