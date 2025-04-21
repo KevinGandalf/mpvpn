@@ -79,13 +79,16 @@ DNSCRYPT_REQUIRE_DNSSEC=true
 DNSCRYPT_REQUIRE_NOLOG=true
 DNSCRYPT_REQUIRE_NOFILTER=true
 
-ENABLE_Backup=false  # Setze auf true, um das Backup zu aktivieren, false um es zu deaktivieren
+# Setze auf true, um das Backup zu aktivieren, false um es zu deaktivieren
+ENABLE_Backup=false  
 # Backup-Verzeichnis
-BACKUP_DIR="/opt/mpvpn/backups"  # Ordner, in dem Backups gespeichert werden
+BACKUP_DIR="/opt/mpvpn/backups"
 # Pfad zum privaten GPG-Schlüssel
-SECRET_KEY="/opt/mpvpn/private.key"  # Pfad zum privaten GPG-Schlüssel
+SECRET_KEY="/opt/mpvpn/private.key"
 # Verzeichnisse, die gesichert werden sollen
-SOURCE_DIRS="/opt/mpvpn"  # Verzeichnisse, die gesichert werden sollen
+SOURCE_DIRS="/opt/mpvpn /etc/wireguard /etc/openvpn"
+# Verzeichnis für die Wiederherstellung
+RESTORE_DIR="/opt/mpvpn/restore"
 
 EXTRA_RT_TABLES=(
     "100 clear"  # Diese Tabelle geht über den Standardrouter
