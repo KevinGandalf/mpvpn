@@ -1,8 +1,24 @@
 #!/bin/bash
-LOG_FILE="/var/log/vpn_mtu_probe.log"
-TARGETS=("8.8.8.8" "google.com")  # Test both IP and domain
-
 source /opt/mpvpn/globals.sh
+
+LOG_FILE="$BASE_PATH/helperscripts/misc/logs/vpn_mtu_probe.log"
+
+# Verzeichnis erstellen, falls nicht vorhanden
+LOG_DIR="$(dirname "$LOG_FILE")"
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+fi
+
+# Logfile erstellen, falls nicht vorhanden
+if [ ! -f "$LOG_FILE" ]; then
+    touch "$LOG_FILE"
+    chmod 640 "$LOG_FILE"
+fi
+
+# Beispiel-Logeintrag
+echo "[$(date '+%F %T')] Starte VPN-MTU-Probe" >> "$LOG_FILE"
+
+TARGETS=("8.8.8.8" "google.com")  # Test both IP and domain
 
 # Initialize log
 echo -e "==== VPN MTU Probe Start ==== $(date)\n" | tee -a "$LOG_FILE"
