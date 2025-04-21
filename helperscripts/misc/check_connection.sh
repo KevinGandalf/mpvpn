@@ -2,9 +2,20 @@
 
 source /opt/mpvpn/globals.sh
 
-# Log-Datei definieren
-LOG_FILE="/var/log/vpn_ip_log.txt"
+LOG_FILE="$BASE_PATH/helperscripts/misc/logs/vpn_conncheck.log"
 timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Verzeichnis erstellen, falls nicht vorhanden
+LOG_DIR="$(dirname "$LOG_FILE")"
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+fi
+
+# Logfile erstellen, falls nicht vorhanden
+if [ ! -f "$LOG_FILE" ]; then
+    touch "$LOG_FILE"
+    chmod 640 "$LOG_FILE"
+fi
 
 # Alle Interfaces zusammenführen
 all_interfaces=("${WGVPN_LIST[@]}" "${OVPN_LIST[@]}")
