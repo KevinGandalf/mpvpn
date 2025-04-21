@@ -1,33 +1,43 @@
 #!/bin/bash
 set -e
 
-# Pfad zur globals.sh
-GLOBALS_FILE="/opt/mpvpn/globals.sh"
-SYSTEMD_DIR="/etc/systemd/system"
-
-# Funktion zum Einlesen der Variablen aus globals.sh
+# Funktion zum Laden der globals.sh
 load_globals() {
-    if [[ -f "$GLOBALS_FILE" ]]; then
-        source "$GLOBALS_FILE"
-    else
-        echo "❌ $GLOBALS_FILE nicht gefunden."
+    # Pfad zur globals.sh Datei
+    GLOBALS_FILE="/opt/mpvpn/globals.sh"
+
+    # Überprüfen, ob die Datei existiert
+    if [[ ! -f "$GLOBALS_FILE" ]]; then
+        echo "❌ globals.sh nicht gefunden! Stelle sicher, dass die Datei unter $GLOBALS_FILE existiert."
         exit 1
     fi
+
+    # Quelle der globals.sh Datei
+    source "$GLOBALS_FILE"
 }
 
-# Funktion zum Erstellen eines SSH-Schlüssels, falls keiner vorhanden ist
-generate_ssh_key() {
-    if [[ ! -f "$SSH_PRIVATE_KEY_PATH" ]]; then
-        echo "🔑 Kein SSH-Schlüssel gefunden, erzeuge neuen SSH-Schlüssel..."
-        mkdir -p /root/.ssh
-        ssh-keygen -t rsa -b 4096 -f "$SSH_PRIVATE_KEY_PATH" -N ""
-        echo "✅ SSH-Schlüssel erstellt: $SSH_PRIVATE_KEY_PATH"
-    else
-        echo "ℹ️ SSH-Schlüssel bereits vorhanden: $SSH_PRIVATE_KEY_PATH"
-    fi
+# Funktion zum Hinzufügen von iptables-Regeln für eingehenden Traffic
+add_iptables_rules() {
+    local SSH_LOCAL_PORT=$1
+
+    echo "🔧 Hinzufügen von iptables-Regeln für Port $SSH_LOCAL_PORT"
+
+    # Erlaube Verbindungen zu dem lokalen Port (Zulassen von eingehendem Traffic)
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -j ACCEPT
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -j ACCEPT
+
+    # Optional: Weitere Regeln für IP-Quellen (z.B. localhost oder bestimmte IPs)
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -s 127.0.0.1 -j ACCEPT
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -s 127.0.0.1 -j ACCEPT
+
+    # Optional: Verbindung aus dem öffentlichen Internet blockieren
+    iptables -A INPUT -p tcp --dport "$SSH_LOCAL_PORT" -j DROP
+    iptables -A INPUT -p udp --dport "$SSH_LOCAL_PORT" -j DROP
+
+    echo "✅ iptables-Regeln für Port $SSH_LOCAL_PORT hinzugefügt."
 }
 
-# Funktion zum Erstellen eines systemd-Services für jedes Relay
+# Funktion zum Erstellen eines SSH-Relays mit systemd und iptables-Regeln
 create_systemd_service() {
     local SSH_TARGET=$1
     local SSH_EXTERNAL_PORT=$2
@@ -36,7 +46,7 @@ create_systemd_service() {
 
     echo "🔧 Erstelle systemd Service für SOCKS5-Relay: $SSH_LOCAL_PORT"
 
-    cat <<EOF > "$SYSTEMD_DIR/$SERVICE_NAME"
+    cat <<EOF > "/etc/systemd/system/$SERVICE_NAME"
 [Unit]
 Description=SSH SOCKS5-Relay für $SSH_TARGET
 After=network.target
@@ -56,6 +66,9 @@ EOF
     systemctl enable "$SERVICE_NAME"
     systemctl start "$SERVICE_NAME"
 
+    # iptables-Regeln für den lokalen Port hinzufügen
+    add_iptables_rules "$SSH_LOCAL_PORT"
+
     echo "✅ Systemd-Service für SOCKS5-Relay $SSH_LOCAL_PORT erstellt und gestartet."
 }
 
@@ -66,18 +79,35 @@ start_all_relays() {
         return
     fi
 
-    for relay in "${SSH_RELAY_LIST[@]}"; do
-        SSH_TARGET=$(echo "$relay" | awk '{print $1}')
-        SSH_EXTERNAL_PORT=$(echo "$relay" | awk '{print $2}')
-        SSH_LOCAL_PORT=$(echo "$relay" | awk '{print $3}')
+    # Durch die Relays iterieren und die Konfiguration aus globals.sh laden
+    for i in "${!SSH_RELAY_TARGETS[@]}"; do
+        SSH_TARGET="${SSH_RELAY_TARGETS[$i]}"
+        SSH_EXTERNAL_PORT="${SSH_RELAY_EXTERNAL_PORTS[$i]}"
+        SSH_LOCAL_PORT="${SSH_RELAY_LOCAL_PORTS[$i]}"
 
         create_systemd_service "$SSH_TARGET" "$SSH_EXTERNAL_PORT" "$SSH_LOCAL_PORT"
     done
 }
 
-# SSH-Schlüssel erzeugen (falls erforderlich)
-generate_ssh_key
+# SSH-Schlüssel überprüfen (erstellen oder vom anderen Server herunterladen)
+if [[ -z "$SSH_PRIVATE_KEY_PATH" ]]; then
+    echo "❌ SSH_PRIVATE_KEY_PATH ist nicht gesetzt. Bitte definieren Sie den Pfad zu Ihrem SSH-Schlüssel in globals.sh."
+    exit 1
+fi
+
+# Prüfen, ob der Schlüssel vorhanden ist oder einen neuen generieren
+if [[ -f "$SSH_PRIVATE_KEY_PATH" ]]; then
+    echo "ℹ️ Vorhandener SSH-Schlüssel erkannt: $SSH_PRIVATE_KEY_PATH"
+else
+    # Wenn ein Remote-Schlüssel angegeben ist, diesen übertragen
+    if [[ -n "$SSH_REMOTE_KEY_PATH" ]]; then
+        download_existing_ssh_key
+    else
+        generate_ssh_key
+    fi
+fi
 
 # Relays starten
 load_globals
+create_systemd_service
 start_all_relays
