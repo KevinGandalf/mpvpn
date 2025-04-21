@@ -109,5 +109,6 @@ fi
 
 # Relays starten
 load_globals
+add_iptables_rules
 create_systemd_service
 start_all_relays
