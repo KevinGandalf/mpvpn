@@ -44,9 +44,17 @@ DNS_VPN4="10.0.0.241,10.0.0.243"      		# pia
 # Poor-Mans-VPN via ssh
 ENABLE_sSSH=false
 SSH_RELAY_LIST=(
-    "ziel1.example.com 1337 2225"
-    "ziel2.example.com 1338 2226"
-    "ziel3.example.com 1339 2227"
+    "ziel1.example.com"
+    "ziel2.example.com"
+    "ziel3.example.com"
+)
+SSH_RELAY_EXTERNAL_PORTS=(
+    "1337"
+    "1337"
+)
+SSH_RELAY_LOCAL_PORTS=(
+    "2225"
+    "3333"
 )
 SSH_CMD_OPTIONS="-q -C -N"
 SSH_PRIVATE_KEY_PATH="/root/.ssh/id_rsa"
