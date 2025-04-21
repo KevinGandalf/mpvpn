@@ -43,9 +43,11 @@ DNS_VPN4="10.0.0.241,10.0.0.243"      		# pia
 
 # Poor-Mans-VPN via ssh
 ENABLE_sSSH=false
-SSH_TARGET="ziel.example.com"
-SSH_EXTERNAL_PORT="1337"
-SSH_LOCAL_PORT="2225"
+SSH_RELAY_LIST=(
+    "ziel1.example.com 1337 2225"
+    "ziel2.example.com 1338 2226"
+    "ziel3.example.com 1339 2227"
+)
 SSH_CMD_OPTIONS="-q -C -N"
 
 #Unbound DNS
