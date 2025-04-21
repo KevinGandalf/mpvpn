@@ -223,6 +223,7 @@ sudo ./helperscripts/assets/menu.sh --install || {
     exit 1
 }
 
+# Überprüfen, ob ENABLE_UNBOUND oder ENABLE_DNSCRYPT auf true gesetzt sind
 if grep -qE '^ENABLE_UNBOUND=true' /opt/mpvpn/globals.sh; then
     ENABLE_UNBOUND=true
 fi
@@ -231,13 +232,14 @@ if grep -qE '^ENABLE_DNSCRYPT=true' /opt/mpvpn/globals.sh; then
     ENABLE_DNSCRYPT=true
 fi
 
+# Wenn eine der Variablen auf true gesetzt ist, wird das install_dns.sh Skript aufgerufen
 if [[ "$ENABLE_UNBOUND" == true || "$ENABLE_DNSCRYPT" == true ]]; then
     echo "🔐 DNS-Konfiguration erkannt:"
     [[ "$ENABLE_UNBOUND" == true ]] && echo " - Unbound wird installiert"
     [[ "$ENABLE_DNSCRYPT" == true ]] && echo " - DNSCrypt wird installiert"
     
-    # Beispielhafte Behandlung – hier könntest du deine Dienste starten oder weitere Skripte einbinden:
-    # ./helperscripts/helperscripts/addons/install_dns.sh
+    # Rufe das Skript zur DNS-Installation auf
+    bash "$BASE_PATH/helperscripts/addons/dns/install_dns.sh"
 fi
 
 # Post-install info
