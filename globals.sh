@@ -79,6 +79,14 @@ DNSCRYPT_REQUIRE_DNSSEC=true
 DNSCRYPT_REQUIRE_NOLOG=true
 DNSCRYPT_REQUIRE_NOFILTER=true
 
+ENABLE_Backup=false  # Setze auf true, um das Backup zu aktivieren, false um es zu deaktivieren
+# Backup-Verzeichnis
+BACKUP_DIR="/opt/mpvpn/backups"  # Ordner, in dem Backups gespeichert werden
+# Pfad zum privaten GPG-Schlüssel
+SECRET_KEY="/opt/mpvpn/private.key"  # Pfad zum privaten GPG-Schlüssel
+# Verzeichnisse, die gesichert werden sollen
+SOURCE_DIRS="/opt/mpvpn"  # Verzeichnisse, die gesichert werden sollen
+
 EXTRA_RT_TABLES=(
     "100 clear"  # Diese Tabelle geht über den Standardrouter
     "200 smtp"   # Diese Tabelle gilt speziell für den Mailverkehr
