@@ -25,6 +25,7 @@ Funktionen im Überblick:
 - Integration Unbound
 - Integration DNSCrypt
 - Socks5 over SSH
+- Bei Bedarf OpenPGP für Backups
 
 UPCOMING:
 - Stealthmode: Schützt deine Privatsspähre auch in Fällen von direkter Kompromittierung - keine Nachvollziehbaren Daten ohne Zugriff auf den LUKS Container.
@@ -140,6 +141,8 @@ OVPN_LIST=("vpn5" "vpn6")
       --addovpn    : Neue OpenVPN-Verbindung hinzufügen.
       --addsshsocks5: Socks5 over SSH Verbindung hinzufügen
       --list       : Alle Verbindungen anzeigen.
+      --backup     : Erstellt ein Backup
+      --restore    : Wiederherstellung eines Backups
       --help       : Zeigt diese Hilfe an.
       --version    : Gibt die Version des Skripts aus.
 ```
