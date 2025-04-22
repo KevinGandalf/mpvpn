@@ -53,7 +53,8 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
 ### Mangle Table - Packet Marking ###
-iptables -t mangle -A PREROUTING -j CONNMARK --restore-mark
+#iptables -t mangle -A PREROUTING -j CONNMARK --restore-mark
+iptables -t mangle -A PREROUTING -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
 
 for i in "${!VPN_INTERFACES[@]}"; do
     iface="${VPN_INTERFACES[$i]}"
@@ -132,6 +133,7 @@ done
 for iface in "${VPN_INTERFACES[@]}"; do
     iptables -t nat -A POSTROUTING -o "$iface" -j MASQUERADE
 done
+iptables -t nat -A POSTROUTING -o $DEFAULT_LANIF -j MASQUERADE
 
 ### Speichern ###
 echo "💾 Speichere Regeln nach $SAVEFILE"
