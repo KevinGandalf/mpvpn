@@ -1,80 +1,115 @@
 #!/bin/bash
+set -euo pipefail
 
 source /opt/mpvpn/globals.sh
 
-# Definiere die Datei, in der die IP-Adressen gespeichert werden
-IP_FILE="/opt/mpvpn/helperscripts/splitdns/vpn_bypass_ips.txt"
-IP_FILE_PREVIOUS="/opt/mpvpn/helperscripts/splitdns/vpn_bypass_ips_previous.txt"
+# === Configuration ===
+IP_FILE="/opt/vpn_bypass_ips.txt"
+IP_FILE_PREVIOUS="/opt/vpn_bypass_ips_previous.txt"
+LOG_FILE="/var/log/vpn_routing.log"
+TARGET_TABLE_NAME="streaming"
+DEBUG=true  # Set to false for less output
 
+# === Helper Functions ===
+progress_bar() {
+    local current=$1
+    local total=$2
+    local elapsed=$(( $(date +%s) - START_TIME ))
+    local avg=$(( current > 0 ? elapsed / current : 0 ))
+    local remaining=$(( total - current ))
+    local eta=$(( avg * remaining ))
 
-# Finde die MARK für die Tabelle mit Name "clear"
+    local width=50
+    local filled=$(( (current * width) / total ))
+    local empty=$(( width - filled ))
+
+    printf "\r["
+    printf '%0.s#' $(seq 1 $filled)
+    printf '%0.s-' $(seq 1 $empty)
+    printf "] %d%% | ETA: %ds" $(( (current * 100) / total )) "$eta"
+}
+
+validate_ip() {
+    local ip=$1
+    [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && return 0 || return 1
+}
+
+# === Get Routing Table ID (MARK) ===
+MARK=""
 for entry in "${EXTRA_RT_TABLES[@]}"; do
-    rt_id=$(echo "$entry" | awk '{print $1}')
-    rt_name=$(echo "$entry" | awk '{print $2}')
-
-    if [[ "$rt_name" == "clear" ]]; then
-        MARK=$rt_id
+    rt_id="${entry%% *}"
+    rt_name="${entry#* }"
+    [[ "$DEBUG" == true ]] && echo "DEBUG: Checking '$entry' → Name='$rt_name' ID=$rt_id"
+    if [[ "$rt_name" == "$TARGET_TABLE_NAME" ]]; then
+        MARK="$rt_id"
         break
     fi
 done
 
-# Wenn keine passende Tabelle gefunden wurde
 if [[ -z "$MARK" ]]; then
-    echo "❌ Tabelle 'clear' nicht in EXTRA_RT_TABLES gefunden!"
+    echo "❌ Routing table '$TARGET_TABLE_NAME' not found!" >&2
+    exit 1
+fi
+[[ "$DEBUG" == true ]] && echo "✅ Using routing table $MARK ($TARGET_TABLE_NAME)"
+
+# === Check DEFAULT_WANGW and DEFAULT_LANIF ===
+if [[ -z "${DEFAULT_WANGW:-}" || -z "${DEFAULT_LANIF:-}" ]]; then
+    echo "❌ DEFAULT_WANGW or DEFAULT_LANIF is not set!" >&2
     exit 1
 fi
 
-# 1. Lade die IP-Adressen von GitHub herunter
-echo "$(date) - Lade IP-Adressen von GitHub herunter..."
-curl -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"
+# === Load IP file ===
+echo "$(date) - Loading IP addresses from GitHub..."
+if ! curl --interface azirevpn1 -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"; then
+    echo "❌ Failed to download IP list!" >&2
+    exit 1
+fi
 
-# 2. Lade die IP-Adressen in ein Array
-mapfile -t ip_list < "$IP_FILE"
-
-# 3. Berechnung für Fortschrittsbalken
+# === Load IPs into array ===
+mapfile -t ip_list < <(grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(/[0-9]+)?$' "$IP_FILE")
 TOTAL_IPS=${#ip_list[@]}
 START_TIME=$(date +%s)
 
-progress_bar() {
-  local current=$1
-  local elapsed_time=$(( $(date +%s) - START_TIME ))
+# === Track processed IPs to avoid duplicates ===
+declare -A processed_ips
 
-  # Verhindern von Division durch 0 (bei den ersten paar IPs)
-  if [[ $current -gt 0 ]]; then
-    local avg_time_per_ip=$(echo "scale=2; $elapsed_time / $current" | bc)
-  else
-    local avg_time_per_ip=0
-  fi
-
-  local remaining_ips=$(( TOTAL_IPS - current ))
-  local estimated_remaining_time=$(echo "scale=0; $avg_time_per_ip * $remaining_ips / 1" | bc)
-
-  local width=50
-  local progress=$(( (current * width) / TOTAL_IPS ))
-  local remaining=$(( width - progress ))
-
-  printf "\r["
-  for ((i=0; i<progress; i++)); do printf "#"; done
-  for ((i=0; i<remaining; i++)); do printf "-"; done
-  printf "] %d%% | ⏳ Restzeit: %ds" $(( (current * 100) / TOTAL_IPS )) "$estimated_remaining_time"
-}
-
-# 4. Füge neue Routen hinzu oder aktualisiere sie
+# === Set routes ===
 for i in "${!ip_list[@]}"; do
-    ip_only=$(echo "${ip_list[$i]}" | cut -d'/' -f1)
+    ip_cidr="${ip_list[$i]}"
+    ip_only="${ip_cidr%%/*}"
 
-    # Überprüfen, ob die IP-Adresse bereits als Route existiert
-    if ! ip route show | grep -q "$ip_only"; then
-        echo "$(date) - Neue IP-Adresse $ip_only gefunden, füge Route hinzu" >> /var/log/vpn_routing.log
-        sudo ip route add "$ip_only" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF"
+    # Validate IP
+    if ! validate_ip "$ip_only"; then
+        [[ "$DEBUG" == true ]] && echo "⚠️ Invalid IP skipped: $ip_cidr" >&2
+        continue
     fi
 
-    # Fortschrittsbalken aktualisieren
-    progress_bar "$((i+1))"
+    # Skip if already processed
+    if [[ -n "${processed_ips[$ip_only]:-}" ]]; then
+        [[ "$DEBUG" == true ]] && echo "⚠️ Duplicate IP skipped: $ip_only" >&2
+        continue
+    fi
+    processed_ips["$ip_only"]=1
+
+    # Check if route already exists
+    if ip route show table "$MARK" | grep -q "$ip_only"; then
+        echo "$(date) - ⚠️ Route for $ip_only already exists in table $MARK. Skipping..." >> "$LOG_FILE"
+        progress_bar "$((i+1))" "$TOTAL_IPS"
+        continue
+    fi
+
+    # Add the route
+    if ! sudo ip route add "$ip_cidr" via "$DEFAULT_WANGW" dev "$DEFAULT_LANIF" table "$MARK" 2>/dev/null; then
+        echo "$(date) - ❌ Failed to add route for $ip_cidr" >> "$LOG_FILE"
+    else
+        echo "$(date) - ➕ Route: $ip_cidr via $DEFAULT_WANGW ($DEFAULT_LANIF) in table $MARK" >> "$LOG_FILE"
+    fi
+
+    progress_bar "$((i+1))" "$TOTAL_IPS"
 done
 
-# 5. Speichere die aktuelle Liste als die vorherige Liste für den nächsten Vergleich
-echo -e "\n$(date) - Speichere die aktuelle IP-Liste für den nächsten Vergleich..."
+# === Archive list ===
+echo -e "\n$(date) - 💾 Saving current IP list as reference for next time..."
 cp "$IP_FILE" "$IP_FILE_PREVIOUS"
 
-echo "$(date) - ✅ Abgleich abgeschlossen."
+echo "$(date) - ✅ Split routing update completed."
