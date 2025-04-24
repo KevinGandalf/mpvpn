@@ -3,104 +3,49 @@ BASE_PATH="/opt/mpvpn"
 
 #Standard LAN Interface
 DEFAULT_LANIF="enp1s0" 
-#DEFAULT_LANIF=eth0
-
-#Standard Subnet
-DEFAULT_SUBNET="192.168.1.0/24"
-
-#Standard Gateway (Router)
+DEFAULT_LANIP="192.168.1.254"
+#Standard Gateway
 DEFAULT_WANGW="192.168.1.1"
-
-#Freizugebende Ports 
-PORTS_TCP="22,53,80,443"
-# Zum Beispiel wenn Unbound genutzt wird
-PORTS_UDP="53"
+DEFAULT_SUBNET="192.168.1.0/24"
 
 WG_CONF_DIR="/etc/wireguard"
 OVPN_CONF_DIR="/etc/openvpn"
 
 # WireGuard Konfigurationsnamen (entsprechen den .conf-Dateien in /etc/wireguard)
 # Array mit allen VPN-Konfigurationen
-WGVPN_LIST=("vpn1" "vpn2" "vpn3" "vpn4")
+WGVPN_LIST=("mullvad1" "mullvad2" "azirevpn1" "azirevpn2" "ivpn1" "ivpn2" "pia" "nordvpn" "surfshark")
 #Beispiel:
 #WGVPN_LIST=("mullvad" "ovpn" "azirevpn" "surfshark")
 
 # OpenVPN Konfigurationen
 ENABLE_OVPN=false
-#Default: ENABLE_OVPN=false, OpenVPN ist deaktiviert.
-#ENABLE_OVPN=true, OpenVPN ist aktiviert.
-OVPN_LIST=("vpn5" "vpn6")
+#Default: ENABLE_OVPN=false
+#OVPN_LIST=("surfsharkovpn" "nordovpn")
 
 # Wireguard DNS Verbindung je VPN
-# Zuweisung von benuterdefineirten DNS Server je nach Verbindung
-# Beispiele:
-DNS_VPN1="10.0.0.1,91.231.153.2"		# azirevpn
-DNS_VPN2="100.64.0.7"      			# mullvad
-DNS_VPN3="10.0.254.24,10.0.254.10"		# ivpn
-DNS_VPN4="10.0.0.241,10.0.0.243"      		# pia
-#DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
-#DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
+DNS_AZIREVPN="10.0.0.1,91.231.153.2"		# azirevpn
+DNS_MULLVAD="100.64.0.7"      			# mullvad
+DNS_IVPN="10.0.254.24,10.0.254.10"		# ivpn
+DNS_PIA="10.0.0.241,10.0.0.243"      		# pia
+DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
+DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
 
-# Poor-Mans-VPN via ssh
-ENABLE_sSSH=false
-SSH_RELAY_LIST=(
-    "ziel1.example.com"
-    "ziel2.example.com"
-    "ziel3.example.com"
-)
-SSH_RELAY_EXTERNAL_PORTS=(
-    "1337"
-    "1337"
-)
-SSH_RELAY_LOCAL_PORTS=(
-    "2225"
-    "3333"
-)
-SSH_CMD_OPTIONS="-q -C -N"
-SSH_PRIVATE_KEY_PATH="/root/.ssh/id_rsa"
 
-#Unbound DNS
-# Um DNS Leaks zu vermeiden sollten immer
-# DNS Server der VPN Dienste genutzt werden!
-ENABLE_UNBOUND=false
-UNBOUND_AUTOSTART=false
-SET_UNBOUND_DNS=(
-"forward-zone:"
- " name: ".""
-  "forward-addr: 1.1.1.1"      # cloudflare
-  "forward-addr: 8.8.8.8"      # google
-  "forward-addr: 100.64.0.7"   # mullvad
-  "forward-addr: 10.0.254.24"  # ivpn
-)
-
-ENABLE_DNSCRYPT=false
-DNSCRYPT_SERVER_NAMES=("dnscrypt.eu-nl" "dnscrypt.eu-dk" "serbica")
-DNSCRYPT_REQUIRE_DNSSEC=true
-DNSCRYPT_REQUIRE_NOLOG=true
-DNSCRYPT_REQUIRE_NOFILTER=true
-
-# Setze auf true, um das Backup zu aktivieren, false um es zu deaktivieren
-ENABLE_Backup=false  
-# Backup-Verzeichnis
-BACKUP_DIR="/opt/mpvpn/backups"
-# Pfad zum privaten GPG-Schlüssel
-SECRET_KEY="/opt/mpvpn/private.key"
-# Verzeichnisse, die gesichert werden sollen
-SOURCE_DIRS="/opt/mpvpn /etc/wireguard /etc/openvpn"
-# Verzeichnis für die Wiederherstellung
-RESTORE_DIR="/opt/mpvpn/restore"
-
-EXTRA_RT_TABLES=(
-    "100 clear"  # Diese Tabelle geht über den Standardrouter
-    "200 smtp"   # Diese Tabelle gilt speziell für den Mailverkehr
+declare -a EXTRA_RT_TABLES=(
+    "100 clear"
+    "200 smtp"
+    "300 mirror"
+    "400 streaming"
 )
 
 # Clients die das VPN Routing umgehen
 # Auskommentieren, wenn nicht genutzt!
-#NON_VPN_CLIENTS=(
-#    "192.168.1.4"
-#    "192.168.1.5"
-#)
+NON_VPN_CLIENTS=(
+    "192.168.10.167"
+    "192.168.10.164"
+    "192.168.10.51"
+    "192.168.10.61"
+)
 
 # Mailserver-Hostnamen (erweiterbar)
 MAIL_SERVERS=(
@@ -155,7 +100,7 @@ MAIL_SERVERS=(
   "smtp.countermail.com"
 )
 
-DOMAINS=(
+CLEARDOMAINS=(
   "bild.de"
   "netflix.com"
   "amazon.de"
@@ -181,6 +126,8 @@ DOMAINS=(
   "rtlplus.de"
   "zdf.de"
   "ard.de"
+) 
+MIRRORDOMAINS=(
   "repo.almalinux.org"
   "mirror.centos.org"
   "mirrors.edge.kernel.org"
@@ -216,68 +163,257 @@ DOMAINS=(
   "ftp.gwdg.de"
   "almalinux.schlundtech.de"
   "mirror.23m.com"
-  "mirror.netzwerge.de"
-  "mirror.dogado.de"
+    "mirror.netzwerge.de"
+    "mirror.dogado.de"
   "de.mirrors.clouvider.net"
-  "mirror.plusserver.com"
-  "mirror.rackspeed.de"
+    "mirror.plusserver.com"
+    "mirror.rackspeed.de"
   "ftp.halifax.rwth-aachen.de"
   "almalinux-mirror.bernini.dev"
   "ftp.gwdg.de"
-  "mirrors.xtom.de"
-  "mirror.virtarix.com"
+    "mirrors.xtom.de"
+    "mirror.virtarix.com"
   "ftp.fau.de"
-  "mirror.hs-esslingen.de"
+    "mirror.hs-esslingen.de"
   "ftp.uni-bayreuth.de"
-  "mirror.de.leaseweb.net"
+    "mirror.de.leaseweb.net"
   "ptbtime1.ptb.de"
   "ptbtime2.ptb.de"
   "ptbtime3.ptb.de"
   "de.archive.ubuntu.com"
   "ftp.halifax.rwth-aachen.de"
-  "mirror.netcologne.de"
-  "mirror.hetzner.de"
+    "mirror.netcologne.de"
+    "mirror.hetzner.de"
   "ubuntu.mirror.lrz.de"
-  "mirror.dogado.de"
-  "mirror.funkfreundelandshut.de"
+    "mirror.dogado.de"
+    "mirror.funkfreundelandshut.de"
   "archive.ubuntu.com"
-  "mirror.pnl.gov"
-  "mirror.math.princeton.edu"
-  "mirror.kku.ac.th"
-  "mirror.nus.edu.sg"
-  "mirror.ox.ac.uk"
+    "mirror.pnl.gov"
+    "mirror.math.princeton.edu"
+    "mirror.kku.ac.th"
+    "mirror.nus.edu.sg"
+    "mirror.ox.ac.uk"
   "raspbian.raspberrypi.org"
   "ftp.halifax.rwth-aachen.de"
-  "mirror.netcologne.de"
-  "mirror1.hs-esslingen.de"
-  "mirror.funkfreundelandshut.de"
-  "mirror.dogado.de"
-  "mirror.digitalpacific.com.au"
-  "mirror.datamossa.io"
-  "mirror.launtel.net.au"
-  "mirror.realcompute.io"
-  "mirror.lagoon.nc"
+    "mirror.netcologne.de"
+    "mirror1.hs-esslingen.de"
+    "mirror.funkfreundelandshut.de"
+    "mirror.dogado.de"
+    "mirror.digitalpacific.com.au"
+    "mirror.datamossa.io"
+    "mirror.launtel.net.au"
+    "mirror.realcompute.io"
+    "mirror.lagoon.nc"
   "ftp.de.debian.org"
   "ftp.halifax.rwth-aachen.de"
-  "mirror.netcologne.de"
-  "ftp.uni-kl.de"
-  "ftp.fau.de"
-  "mirror.hetzner.de"
-  "deb.debian.org"
-  "ftp.debian.org"
-  "mirror.yandex.ru"
-  "mirror.nus.edu.sg"
-  "mirror.ox.ac.uk"
-  "mirror.kku.ac.th"
-  "mirror.almalinux.org"
-  "mirror.hetzner.de"
-  "mirror.netcologne.de"
-  "mirror.funkfreundelandshut.de"
-  "mirror.dogado.de"
-  "repo.almalinux.org"
-  "mirror.cedia.org.ec"
-  "mirror.flokinet.net"
-  "mirror.serverfreak.com"
-  "mirror.ipserverone.com"
-  "mirror.controlvm.com"
+   "mirror.netcologne.de"
+   "ftp.uni-kl.de"
+   "ftp.fau.de"
+   "mirror.hetzner.de"
+   "deb.debian.org"
+   "ftp.debian.org"
+   "mirror.yandex.ru"
+   "mirror.nus.edu.sg"
+   "mirror.ox.ac.uk"
+   "mirror.kku.ac.th"
+   "mirror.almalinux.org"
+   "mirror.hetzner.de"
+   "mirror.netcologne.de"
+   "mirror.funkfreundelandshut.de"
+   "mirror.dogado.de"
+   "repo.almalinux.org"
+   "mirror.cedia.org.ec"
+   "mirror.flokinet.net"
+   "mirror.serverfreak.com"
+   "mirror.ipserverone.com"
+   "mirror.controlvm.com"
+   "mirror.gotmyhost.com"
+   "mirror.vsys.host"
+   "mirror.dk.team.blue"
+  "vn-mirrors.vhost.vn"
+  "almalinux.mirrors.ovh.net"
+  "mirror.ibcp.fr"
+  "mirror.netweaver.uk"
+"almalinux.mirror.thegigabit.com"
+  "mirror.vtti.vt.edu"
+  "mirror.iphost.md"
+  "mirrors.gbnetwork.com"
+  "mirror.sfo12.us.leaseweb.net"
+  "mirror.server.net"
+  "mirror.rackspeed.de"
+  "mirror.ixirhost.com"
+"insect.mm.fcix.net"
+  "mirror.xenyth.net"
+"pkg.adfinis-on-exoscale.ch"
+"muug.ca"
+"per.aws.repo.almalinux.org"
+"kozyatagi.mirror.guzel.net.tr"
+  "mirrors.xtom.ee"
+  "mirror.ossplanet.net"
+"almalinux.mirror.wearetriple.com"
+"for.aws.repo.almalinux.org"
+  "mirrors.rda.run"
+  "mirrors.isu.net.sa"
+  "mirrors.tino.org"
+  "mirror.raiolanetworks.com"
+  "mirror.ekiphost.com"
+  "mirror.mx.hawkhost.com"
+  "mirror.2degrees.nz"
+"phx.mirrors.clouvider.net"
+  "mirror.yuki.net.uk"
+"capital.hoster.kz"
+"bna.aws.repo.almalinux.org"
+"ftp.jaist.ac.jp"
+  "mirrors.hostico.ro"
+"elmirror.cl"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
+  "mirror.2degrees.nz"
+  "mirror.yuki.net.uk"
+  "mirror.ekiphost.com"
+  "mirror.raiolanetworks.com"
 )
