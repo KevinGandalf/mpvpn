@@ -94,6 +94,69 @@ git clone https://github.com/KevinGandalf/mpvpn
     #für OpenVPN
     mpvpn --addovpn
     ```
+5. Sysctl vorbereiten
+```bash
+   # ===== Basic Networking =====
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 0
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+# ===== Multipath Routing =====
+net.ipv4.fib_multipath_hash_policy = 1
+net.ipv4.fib_multipath_use_neigh = 1
+net.ipv4.fib_multipath_hash_fields=0x0037
+net.ipv4.conf.all.rp_filter=2  # Loose mode (recommended for ECMP)
+net.ipv4.conf.default.rp_filter=2
+net.ipv4.tcp_keepalive_time=300
+net.ipv4.tcp_keepalive_probes=3
+net.ipv4.tcp_keepalive_intvl=30
+net.ipv4.neigh.default.gc_thresh1=1024
+net.ipv4.neigh.default.gc_thresh2=2048
+net.ipv4.neigh.default.gc_thresh3=4096
+net.ipv4.xfrm4_gc_thresh=32768
+
+# ===== Buffer Settings =====
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 4194304
+net.ipv4.tcp_wmem = 4096 65536 4194304
+net.ipv4.tcp_window_scaling = 1
+
+# ===== Conntrack Optimization =====
+net.netfilter.nf_conntrack_max = 524288
+net.netfilter.nf_conntrack_buckets = 131072
+
+# TCP timeouts
+net.netfilter.nf_conntrack_tcp_timeout_established = 86400
+net.netfilter.nf_conntrack_tcp_timeout_close = 10
+net.netfilter.nf_conntrack_tcp_timeout_close_wait = 60
+net.netfilter.nf_conntrack_tcp_timeout_fin_wait = 120
+net.netfilter.nf_conntrack_tcp_timeout_last_ack = 30
+net.netfilter.nf_conntrack_tcp_timeout_syn_recv = 60
+net.netfilter.nf_conntrack_tcp_timeout_syn_sent = 120
+net.netfilter.nf_conntrack_tcp_timeout_time_wait = 120
+
+# UDP timeouts
+net.netfilter.nf_conntrack_udp_timeout = 60
+net.netfilter.nf_conntrack_udp_timeout_stream = 180
+
+# ICMP timeout
+net.netfilter.nf_conntrack_icmp_timeout = 30
+
+# Generic timeout
+net.netfilter.nf_conntrack_generic_timeout = 600
+
+# ===== System Performance =====
+fs.file-max = 2097152
+net.core.netdev_max_backlog = 300000
+net.core.somaxconn = 32768
+
+# ===== VPN Specific =====
+net.ipv4.tcp_reordering = 10
+net.ipv4.tcp_mtu_probing = 1  # Helps with VPN MTU issues
+```
 
 ## Konfiguration
 
