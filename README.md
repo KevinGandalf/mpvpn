@@ -188,15 +188,16 @@ OVPN_LIST=("vpn5" "vpn6")
 ## mpvpn Befehle
 ```bash
     Verfügbare Optionen für mpvpn:
-      --startmpvpn : Startet MPVPN
-      --install    : Installiert die Abhängigkeiten
-      --addwg      : Neue WireGuard-Verbindung hinzufügen
-      --addovpn    : Neue OpenVPN-Verbindung hinzufügen.
-      --addsshsocks5: Socks5 over SSH Verbindung hinzufügen
-      --list       : Alle Verbindungen anzeigen.
-      --backup     : Erstellt ein Backup
-      --restore    : Wiederherstellung eines Backups
-      --help       : Zeigt diese Hilfe an.
-      --version    : Gibt die Version des Skripts aus.
+      --startmpvpn   : Startet MPVPN
+      --install      : Installiert die Abhängigkeiten
+      --addwg        : Neue WireGuard-Verbindung hinzufügen
+      --addovpn      : Neue OpenVPN-Verbindung hinzufügen.
+      --addsshsocks5 : Socks5 over SSH Verbindung hinzufügen
+      --status       : IP Rules Status, Iptables etc.
+      --list         : Alle Verbindungen anzeigen.
+      --backup       : Erstellt ein Backup
+      --restore      : Wiederherstellung eines Backups
+      --help         : Zeigt diese Hilfe an.
+      --version      : Gibt die Version des Skripts aus.
 ```
 
