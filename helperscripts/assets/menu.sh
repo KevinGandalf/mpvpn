@@ -3,15 +3,17 @@
 # Funktion, um alle verfügbaren Optionen anzuzeigen
 show_help() {
     echo "Verfügbare Optionen für mpvpn:"
-    echo "  --startmpvpn : Startet MPVPN"
-    echo "  --install    : Installiert die Abhängigkeiten"
-    echo "  --addwg      : Neue WireGuard-Verbindung hinzufügen."
-    echo "  --addovpn    : Neue OpenVPN-Verbindung hinzufügen."
-    echo "  --list       : Alle Verbindungen anzeigen."
-    echo "  --backup     : Erstellt ein Backup, wenn aktiviert"
-    echo "  --restore    : Stellt ein Backup wieder her"
-    echo "  --help       : Zeigt diese Hilfe an."
-    echo "  --version    : Gibt die Version des Skripts aus."
+    echo "  --startmpvpn  : Startet MPVPN"
+    echo "  --install     : Installiert die Abhängigkeiten"
+    echo "  --addwg       : Neue WireGuard-Verbindung hinzufügen."
+    echo "  --addovpn     : Neue OpenVPN-Verbindung hinzufügen."
+    echo "  --addsssocks5 : Neue SSH Socks5 Verbindung hinzufügen."
+    echo "  --status      : Anzeigen der aktiven Rules, iptables etc. " 
+    echo "  --list        : Alle Verbindungen anzeigen."
+    echo "  --backup      : Erstellt ein Backup, wenn aktiviert"
+    echo "  --restore     : Stellt ein Backup wieder her"
+    echo "  --help        : Zeigt diese Hilfe an."
+    echo "  --version     : Gibt die Version des Skripts aus."
 }
 
 # Funktion, um aktive Verbindungen anzuzeigen
@@ -48,6 +50,9 @@ elif [[ "$1" == "--addopenvpn" ]]; then
 elif [[ "$1" == "--addsssocks5" ]]; then
     # Befehl zum Hinzufügen eines SSH SOCKS5-Tunnels
     /opt/mpvpn/helperscripts/assets/addsshsocks5.sh
+elif [[ "$1" == "--status" ]]; then
+    # Befehl um den Status der Routing Regeln etc. zu prüfen
+    /opt/mpvpn/helperscripts/misc/check_status.sh
 elif [[ "$1" == "--list" ]]; then
     # Befehl für das Anzeigen der aktiven Verbindungen
     list_active_connections
