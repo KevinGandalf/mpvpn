@@ -95,7 +95,7 @@ git clone https://github.com/KevinGandalf/mpvpn
     mpvpn --addovpn
     ```
 5. Sysctl vorbereiten
-```bash
+    ```bash
     net.ipv4.ip_forward = 1
     net.ipv6.conf.all.forwarding = 0
     net.ipv6.conf.all.disable_ipv6 = 1
@@ -146,8 +146,7 @@ git clone https://github.com/KevinGandalf/mpvpn
     
     net.ipv4.tcp_reordering = 10
     net.ipv4.tcp_mtu_probing = 1
-```
-
+    ```
 ## Konfiguration
 
 Der Übersicht halber wurde das Main Script `mpvpn.sh` aufgeräumt und die Sequenzen in einzelne Scripte verpackt. Es gibt mehrere Variablen, die angepasst werden müssen:
