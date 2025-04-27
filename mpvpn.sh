@@ -68,14 +68,8 @@ echo "Setze Routing Tables..."
 #FWMARK
 /opt/mpvpn/helperscripts/startup/addfwmark.sh
 
-#IP Rule Ausnahmen Table 100 über enp1s0 --> 192.168.10.1
-echo "Setze Ausnahmen auf Table 100..."
-/opt/mpvpn/helperscripts/routes/set_clearnetonly.sh
-
-#Ausnahmen SMTP etc.
-echo "Setze Table 200..."
-/opt/mpvpn/helperscripts/routes/set_smtproutes.sh
-
+echo "Setze FWMARKs und Routing Regeln..."
+/opt/mpvpn/routes/set_routingrules.sh
 #Erhalte IP-Adressen zu diversen Mail Domänen, mit Output
 echo "Besorge IP-Adressen von diversen Mail Diensten..."
 /opt/mpvpn/helperscripts/splitdns/get_mailserver.sh
@@ -93,5 +87,9 @@ sleep 3
 echo "Einrichtung SplitDNS"
 /opt/mpvpn/helperscripts/splitdns/get_streaming.sh
 /opt/mpvpn/helperscripts/splitdns/get_splitdnsdomain.sh
+echo "Generiere IPSETS..."
+/opt/mpvpn/helperscripts/generate_ipsets.sh --apply
+#echo "Starte Unbound neu..."
+#systemctl restart unbound
 
 echo "...Have Fun!..."
