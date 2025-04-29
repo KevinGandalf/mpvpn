@@ -242,6 +242,18 @@ if [[ "$ENABLE_UNBOUND" == true || "$ENABLE_DNSCRYPT" == true ]]; then
     bash "$BASE_PATH/helperscripts/addons/dns/install_dns.sh"
 fi
 
+# === SSH 2FA aktivieren wenn gewünscht ===
+if [[ "$ENABLE_SSH2FA" == "true" ]]; then
+  if [[ -x "$INSTALL_2FA_SCRIPT" ]]; then
+    echo "[*] SSH 2FA ist aktiviert – Starte Installationsskript..."
+    bash "$INSTALL_2FA_SCRIPT"
+  else
+    echo "[!] SSH 2FA-Skript nicht gefunden oder nicht ausführbar: $INSTALL_2FA_SCRIPT"
+  fi
+else
+  echo "[*] SSH 2FA ist deaktiviert – überspringe Einrichtung."
+fi
+
 # Post-install info
 cat <<EOF
 
