@@ -8,6 +8,10 @@ DEFAULT_LANIP="192.168.1.254"
 DEFAULT_WANGW="192.168.1.1"
 DEFAULT_SUBNET="192.168.1.0/24"
 
+#2Faktor Authentifierung für SSH
+#Zum aktivieren ENABLE_SSH2FA=true
+ENABLE_SSH2FA=false
+
 WG_CONF_DIR="/etc/wireguard"
 OVPN_CONF_DIR="/etc/openvpn"
 
