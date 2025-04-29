@@ -157,27 +157,55 @@ Der Übersicht halber wurde das Main Script `mpvpn.sh` aufgeräumt und die Seque
 # Basisverzeichnis für VPN-Skripte
 BASE_PATH="/opt/mpvpn"
 
-# Standard LAN Interface
-DEFAULT_LANIF="enp1s0"
-
-# Standard Gateway
+#Standard LAN Interface
+DEFAULT_LANIF="enp1s0" 
+DEFAULT_LANIP="192.168.1.254"
+#Standard Gateway
 DEFAULT_WANGW="192.168.1.1"
+DEFAULT_SUBNET="192.168.1.0/24"
 
-# WireGuard Konfigurationsverzeichnis
+#2Faktor Authentifierung für SSH
+#Zum aktivieren ENABLE_SSH2FA=true
+ENABLE_SSH2FA=false
+
 WG_CONF_DIR="/etc/wireguard"
-# OpenVPN Konfigurationsverzeichnis
 OVPN_CONF_DIR="/etc/openvpn"
 
 # WireGuard Konfigurationsnamen (entsprechen den .conf-Dateien in /etc/wireguard)
-WGVPN_LIST=("vpn1" "vpn2" "vpn3" "vpn4")
-
-# Beispiel:
-# WGVPN_LIST=("mullvad" "ovpn" "azirevpn" "surfshark")
+# Array mit allen VPN-Konfigurationen
+WGVPN_LIST=("mullvad1" "mullvad2" "azirevpn1" "azirevpn2" "ivpn1" "ivpn2" "pia" "nordvpn" "surfshark")
+#Beispiel:
+#WGVPN_LIST=("mullvad" "ovpn" "azirevpn" "surfshark")
 
 # OpenVPN Konfigurationen
 ENABLE_OVPN=false
-# Default: ENABLE_OVPN=false
-OVPN_LIST=("vpn5" "vpn6")
+#Default: ENABLE_OVPN=false
+#OVPN_LIST=("surfsharkovpn" "nordovpn")
+
+# Wireguard DNS Verbindung je VPN
+DNS_AZIREVPN="10.0.0.1,91.231.153.2"		# azirevpn
+DNS_MULLVAD="100.64.0.7"      			# mullvad
+DNS_IVPN="10.0.254.24,10.0.254.10"		# ivpn
+DNS_PIA="10.0.0.241,10.0.0.243"      		# pia
+DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
+DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
+
+
+declare -a EXTRA_RT_TABLES=(
+    "100 clear"
+    "200 smtp"
+    "300 mirror"
+    "400 streaming"
+)
+
+# Clients die das VPN Routing umgehen
+# Auskommentieren, wenn nicht genutzt!
+NON_VPN_CLIENTS=(
+    "192.168.1.167"
+    "192.168.1.164"
+    "192.168.1.51"
+    "192.168.1.61"
+)
 ```    
 5. MPVPN starten:
     ```bash
