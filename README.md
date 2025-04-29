@@ -164,6 +164,11 @@ DEFAULT_LANIP="192.168.1.254"
 DEFAULT_WANGW="192.168.1.1"
 DEFAULT_SUBNET="192.168.1.0/24"
 
+#Freizugebende Ports 
+ PORTS_TCP="22,53,80,443"
+ # Zum Beispiel wenn Unbound genutzt wird
+ PORTS_UDP="53"
+
 #2Faktor Authentifierung für SSH
 #Zum aktivieren ENABLE_SSH2FA=true
 ENABLE_SSH2FA=false
@@ -190,6 +195,47 @@ DNS_PIA="10.0.0.241,10.0.0.243"      		# pia
 DNS_NORDVPN="103.86.96.100,103.86.99.100"	# nordvpn
 DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
 
+# Poor-Mans-VPN via ssh
+ ENABLE_sSSH=false
+ SSH_CMD_OPTIONS="-q -C -N"
+ SSH_RELAY_LIST=(
+     "ziel1.example.com"
+     "ziel2.example.com"
+     "ziel3.example.com"
+ )
+ SSH_RELAY_EXTERNAL_PORTS=(
+     "1337"
+     "1337"
+ )
+ SSH_RELAY_LOCAL_PORTS=(
+     "2225"
+     "3333"
+ )
+ SSH_CMD_OPTIONS="-q -C -N"
+ SSH_PRIVATE_KEY_PATH="/root/.ssh/id_rsa"
+ )
+ 
+ #Unbound DNS
+ # Um DNS Leaks zu vermeiden sollten immer
+ # DNS Server der VPN Dienste genutzt werden!
+ ENABLE_UNBOUND=false
+ UNBOUND_AUTOSTART=false
+ SET_UNBOUND_DNS=(
+ "forward-zone:"
+  " name: ".""
+   "forward-addr: 1.1.1.1"      # cloudflare
+   "forward-addr: 8.8.8.8"      # google
+   "forward-addr: 100.64.0.7"   # mullvad
+   "forward-addr: 10.0.254.24"  # ivpn
+ )
+
+ ENABLE_DNSCRYPT=false
+ ENABLE_DNSCRYPTPROXY=false
+ DNSCRYPT_AUTOSTART=false
+ DNSCRYPT_SERVER_NAMES=("dnscrypt.eu-nl" "dnscrypt.eu-dk" "serbica")
+ DNSCRYPT_REQUIRE_DNSSEC=true
+ DNSCRYPT_REQUIRE_NOLOG=true
+ DNSCRYPT_REQUIRE_NOFILTER=true
 
 declare -a EXTRA_RT_TABLES=(
     "100 clear"
@@ -206,6 +252,17 @@ NON_VPN_CLIENTS=(
     "192.168.1.51"
     "192.168.1.61"
 )
+
+ENABLE_Backup=false  # Setze auf true, um das Backup zu aktivieren, false um es zu deaktivieren
+ # Backup-Verzeichnis
+ BACKUP_DIR="/opt/mpvpn/backups"  # Ordner, in dem Backups gespeichert werden
+ # Pfad zum privaten GPG-Schlüssel
+ SECRET_KEY="/opt/mpvpn/private.key"  # Pfad zum privaten GPG-Schlüssel
+ # Verzeichnisse, die gesichert werden sollen
+ SOURCE_DIRS="/opt/mpvpn /etc/wireguard /etc/openvpn"
+ # Verzeichnis für die Wiederherstellung
+ RESTORE_DIR="/opt/mpvpn/restore"
+...
 ```    
 5. MPVPN starten:
     ```bash
