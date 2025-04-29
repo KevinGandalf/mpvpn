@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lade globale Variablen aus der globals.sh
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Hole die Routing-Tabelle für SMTP aus der EXTRA_RT_TABLES
 for table in "${EXTRA_RT_TABLES[@]}"; do

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Liste der DNS-Server
 DNS_SERVERS=("8.8.8.8" "1.1.1.1" "9.9.9.9" "208.67.222.222")

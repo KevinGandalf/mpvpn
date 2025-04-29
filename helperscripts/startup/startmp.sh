@@ -2,7 +2,7 @@
 exec > >(tee -a /opt/mpvpn/logs/startmp.log) 2>&1
 set -x
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Dynamischer Pfad für das Status-Logfile
 STATUSFILE="$BASE_PATH/helperscripts/startup/logs/mpinitstatus.log"

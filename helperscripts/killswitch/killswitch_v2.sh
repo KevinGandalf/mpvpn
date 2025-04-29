@@ -8,7 +8,7 @@ CHECK_INTERVAL=10
 BOOT_GRACE_PERIOD=180  # in Sekunden (z. B. 180 = 3 Minuten)
 
 # Load interfaces from globals.sh
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 VPN_INTERFACES=("${WGVPN_LIST[@]}" "${OVPN_LIST[@]}")
 
 # Calculate system uptime in seconds

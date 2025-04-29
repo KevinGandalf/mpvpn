@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Lade globale Variablen
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Installiere Abhängigkeiten
 install_dependencies() {

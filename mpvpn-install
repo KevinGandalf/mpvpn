@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
+echo 'export BASE_PATH=/opt/mpvpn' >> ~/.bashrc
+source ~/.bashrc
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 check_and_disable_ufw() {
     if command -v ufw >/dev/null 2>&1; then

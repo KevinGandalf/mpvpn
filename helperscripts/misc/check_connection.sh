@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 LOG_FILE="$BASE_PATH/helperscripts/misc/logs/vpn_conncheck.log"
 timestamp=$(date "+%Y-%m-%d %H:%M:%S")

@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Durchlaufe alle VPN-Interfaces in der Liste
 for vpn in "${WGVPN_LIST[@]}"; do

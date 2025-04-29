@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Verzeichnis mit den WireGuard-Konfigurationsdateien
 WG_DIR="/etc/wireguard"

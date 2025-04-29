@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # globals.sh einbinden
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Prüfung auf essentielle Variablen
 if [[ -z "$DEFAULT_SUBNET" || -z "$DEFAULT_LANIF" || -z "$DEFAULT_LANIP" || -z "$DEFAULT_WANGW" ]]; then

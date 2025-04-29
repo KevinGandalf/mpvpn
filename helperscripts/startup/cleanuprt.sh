@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Bereinige Routing Tables (mit Switch für OpenVPN)
 echo "🧹 Räume /etc/iproute2/rt_tables auf..."

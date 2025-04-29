@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 #ROUTING TABLES
 echo "📝 Schreibe Routing Tables..."

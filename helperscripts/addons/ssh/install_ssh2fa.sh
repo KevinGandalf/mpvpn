@@ -8,7 +8,7 @@ if [[ ! -f /opt/mpvpn/globals.sh ]]; then
   exit 1
 fi
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # === Prüfen ob 2FA aktiviert werden soll ===
 if [[ "$ENABLE_SSH2FA" != "true" ]]; then

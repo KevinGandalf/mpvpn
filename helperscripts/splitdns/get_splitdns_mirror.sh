@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # === Variablen ===
 LOGFILE="/var/log/splitdns_routing_mirror.log"

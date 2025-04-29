@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lade die globals.sh, damit die Variablen verfügbar sind
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 echo "Setze Routing-Tabellen für Ausnahmen und spezifische Tabellen..."
 

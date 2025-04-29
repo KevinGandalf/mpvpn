@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # globals.sh laden
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 echo "🚦 Starte Installation des DNS-Stacks..."
 

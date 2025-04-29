@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Finde den Tabellennamen und die ID für SMTP
 for entry in "${EXTRA_RT_TABLES[@]}"; do

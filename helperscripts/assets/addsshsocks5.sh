@@ -3,7 +3,7 @@
 # Füge SSH SOCKS5-Tunnel-Konfiguration zu globals.sh hinzu
 add_ssh_socks5_tunnel() {
     # Lade globals.sh
-    source /opt/mpvpn/globals.sh
+    source $BASE_PATH/globals.conf
 
     echo "Füge eine neue SSH SOCKS5-Verbindung hinzu..."
 
@@ -51,7 +51,7 @@ add_iptables_rules() {
 # Funktion, um den SSH Tunnel zu starten
 start_ssh_socks5_tunnel() {
     # Lade globals.sh
-    source /opt/mpvpn/globals.sh
+    source $BASE_PATH/globals.conf
 
     # Prüfe, ob SSH aktiviert ist
     if [ "$ENABLE_SSH" == "true" ]; then

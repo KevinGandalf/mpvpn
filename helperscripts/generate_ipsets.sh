@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 RESET=false
 APPLY_RULES=false

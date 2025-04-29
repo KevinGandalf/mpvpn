@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 start_all_ovpns() {
     # Überprüfen, ob OpenVPN aktiviert ist

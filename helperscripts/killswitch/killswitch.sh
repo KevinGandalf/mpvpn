@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lade die globale Konfiguration
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Sicherstellen, dass die KILLSWITCH-Kette existiert
 initialize_iptables() {

@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Lade globale Variablen
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Funktion zum Setzen des DNS-Servers
 set_dns_server() {

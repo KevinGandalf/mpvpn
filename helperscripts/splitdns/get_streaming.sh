@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # === Configuration ===
 IP_FILE="/opt/vpn_bypass_ips.txt"

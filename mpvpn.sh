@@ -1,6 +1,7 @@
 #!/bin/bash
 # systemctl start unbound
-source /opt/mpvpn/globals.sh
+export BASE_PATH=/opt/mpvpn
+source $BASE_PATH/globals.conf
 
 # Betriebssystem erkennen
 if [[ -f /etc/debian_version ]]; then

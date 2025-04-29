@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Ensure root execution
 if [[ $EUID -ne 0 ]]; then

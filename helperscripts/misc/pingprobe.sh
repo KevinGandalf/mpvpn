@@ -1,5 +1,5 @@
 #!/bin/bash
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 LOG_FILE="$BASE_PATH/helperscripts/misc/logs/vpn_mtu_probe.log"
 

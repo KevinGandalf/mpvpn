@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lade globale Konfiguration
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 # Lokales Arbeitsverzeichnis für Backup-Skripte und temporäre Dateien
 BACKUP_WORKDIR="/opt/mpvpn/helperscripts/backup"
