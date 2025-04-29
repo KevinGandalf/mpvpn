@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source /opt/mpvpn/globals.sh
+
 check_and_disable_ufw() {
     if command -v ufw >/dev/null 2>&1; then
         echo "🛠️  Deaktiviere ufw..."
@@ -242,6 +244,7 @@ if [[ "$ENABLE_UNBOUND" == true || "$ENABLE_DNSCRYPT" == true ]]; then
     bash "$BASE_PATH/helperscripts/addons/dns/install_dns.sh"
 fi
 
+INSTALL_2FA_SCRIPT="/opt/mpvpn/helperscripts/addons/ssh/install_ssh2fa.sh"
 # === SSH 2FA aktivieren wenn gewünscht ===
 if [[ "$ENABLE_SSH2FA" == "true" ]]; then
   if [[ -x "$INSTALL_2FA_SCRIPT" ]]; then
