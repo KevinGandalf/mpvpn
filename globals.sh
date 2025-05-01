@@ -57,7 +57,6 @@ DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
  )
  SSH_CMD_OPTIONS="-q -C -N"
  SSH_PRIVATE_KEY_PATH="/root/.ssh/id_rsa"
- )
  
  #Unbound DNS
  # Um DNS Leaks zu vermeiden sollten immer
