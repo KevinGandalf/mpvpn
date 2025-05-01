@@ -66,7 +66,7 @@ install_epel_if_needed() {
 install_debian_ubuntu() {
     echo "🛠️  Debian/Ubuntu: Update und Upgrade..."
     apt update && apt upgrade -y
-    apt install -y curl wget git iptables net-tools nano rsyslog
+    apt install -y curl wget git iptables net-tools nano rsyslog ipset
     check_iproute2
     install_iptables_alternative_debian
 
@@ -84,7 +84,7 @@ install_debian_ubuntu() {
 install_fedora() {
     echo "🛠️  Fedora: Update und Upgrade..."
     dnf update -y && dnf upgrade -y
-    dnf install -y curl wget git iptables net-tools nano rsyslog
+    dnf install -y curl wget git iptables net-tools nano rsyslog ipset
     check_iproute2
     install_iptables_alternative_rpm
 
@@ -101,7 +101,7 @@ install_rocky_alma() {
     echo "🛠️  Rocky/CentOS/AlmaLinux: Update und Upgrade..."
     dnf update -y && dnf upgrade -y
     install_epel_if_needed
-    dnf install -y curl wget git iptables net-tools nano rsyslog
+    dnf install -y curl wget git iptables net-tools nano rsyslog ipset
     check_iproute2
     install_iptables_alternative_rpm
 
@@ -117,7 +117,7 @@ install_rocky_alma() {
 install_arch() {
     echo "🛠️  Arch Linux: Update und Upgrade..."
     pacman -Syu --noconfirm
-    pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng iproute2
+    pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng iproute2 ipset
 
     pacman -Qs wireguard-tools > /dev/null || pacman -S --noconfirm wireguard-tools
 
@@ -131,7 +131,7 @@ install_arch() {
 install_opensuse() {
     echo "🛠️  openSUSE: Update und Upgrade..."
     zypper update -y
-    zypper install -y curl wget git iptables net-tools nano syslog-ng iproute2
+    zypper install -y curl wget git iptables net-tools nano syslog-ng iproute2 ipset
 
     install_iptables_alternative_rpm
 
