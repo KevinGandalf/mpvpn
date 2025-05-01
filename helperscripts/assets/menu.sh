@@ -12,6 +12,7 @@ show_help() {
     echo "  --list        : Alle Verbindungen anzeigen."
     echo "  --backup      : Erstellt ein Backup, wenn aktiviert"
     echo "  --restore     : Stellt ein Backup wieder her"
+    echo "  --update      : Aktualisiert MPVPN"
     echo "  --help        : Zeigt diese Hilfe an."
     echo "  --version     : Gibt die Version des Skripts aus."
 }
@@ -62,6 +63,9 @@ elif [[ "$1" == "--backup" ]]; then
 elif [[ "$1" == "--restore" ]]; then
     # Befehl für das Wiederherstellen von Backups
     /opt/mpvpn/helperscripts/assets/restorebackup.sh
+elif [[ "$1" == "--update" ]]; then
+    # Befehl für das Update von MPVPN
+    /opt/mpvpn/helperscripts/assets/update.sh
 elif [[ "$1" == "--help" ]]; then
     # Hilfe anzeigen
     show_help
