@@ -165,6 +165,28 @@ echo "Alle Xray-Clients wurden erfolgreich gestartet."
 
 }
 
+# Funktion zur Installation von tun2socks (OS-spezifisch)
+install_tun2socks() {
+    local OS=$(uname -s)
+    
+    case $OS in
+        Linux)
+            if command -v apt-get &> /dev/null; then
+                apt-get install -y tun2socks
+            elif command -v yum &> /dev/null; then
+                yum install -y tun2socks
+            elif command -v pacman &> /dev/null; then
+                pacman -S --noconfirm tun2socks
+            fi
+            ;;
+        *)
+            echo "Unsupported OS"
+            exit 1
+            ;;
+    esac
+}
+
+
 # Hauptfunktion
 main() {
     install_dependencies
@@ -174,6 +196,7 @@ main() {
     prepare_vpn_configs
     deploy_server_script
     start_xray_client
+    install_tun2socks
     echo "Clientsetup abgeschlossen."
 }
 
