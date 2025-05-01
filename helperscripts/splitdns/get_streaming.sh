@@ -60,7 +60,7 @@ fi
 
 # === Load IP file ===
 echo "$(date) - Loading IP addresses from GitHub..."
-if ! curl --interface azirevpn1 -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"; then
+if ! curl --interface $DEFAULT_LANIF -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"; then
     echo "❌ Failed to download IP list!" >&2
     exit 1
 fi
