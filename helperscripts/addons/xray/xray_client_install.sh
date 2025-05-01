@@ -151,6 +151,20 @@ for VPN in "${WGVPN_LIST[@]}"; do
     echo "Starte Xray-Dienst für $VPN..."
     systemctl enable xray-$VPN.service
     systemctl restart xray-$VPN.service
+    # Starte tun2socks für jedes VPN
+    echo "Starte tun2socks für $VPN..."
+    tun2socks -proxy 127.0.0.1:$XRAY_PORT -tun-device /dev/net/tun -tun-name tun-$VPN &
+    echo "tun2socks für $VPN gestartet."
+
+    # Ausgabe der nötigen VPN-Konfigurationsänderungen
+    echo ""
+    echo "==> Für $VPN (WireGuard oder OpenVPN) musst du folgende Änderungen vornehmen:"
+    echo "1. Ändere die 'AllowedIPs' in der WireGuard-Konfiguration (z.B. wg0.conf):"
+    echo "   - Füge den Xray-Server als Ziel für den gesamten Verkehr hinzu, z.B. 'AllowedIPs = 0.0.0.0/0, ::/0'."
+    echo "2. Falls du OpenVPN verwendest, ändere die Route in der Konfiguration (z.B. client.ovpn):"
+    echo "   - Füge hinzu: 'route 0.0.0.0 0.0.0.0 vpn_gateway'."
+    echo "3. Ändere das Standard-Routing, um den Tunnelverkehr über Xray zu leiten:"
+    echo "   - Beispiel: 'PostUp = ip route add default via 127.0.0.1:$XRAY_PORT'."
 done
 
 if [[ "$ENABLE_OVPN" == "true" ]]; then
@@ -158,11 +172,24 @@ if [[ "$ENABLE_OVPN" == "true" ]]; then
         echo "Starte Xray-Dienst für $VPN..."
         systemctl enable xray-$VPN.service
         systemctl restart xray-$VPN.service
+        # Starte tun2socks für jedes VPN
+        echo "Starte tun2socks für $VPN..."
+        tun2socks -proxy 127.0.0.1:$XRAY_PORT -tun-device /dev/net/tun -tun-name tun-$VPN &
+        echo "tun2socks für $VPN gestartet."
+
+        # Ausgabe der nötigen VPN-Konfigurationsänderungen
+        echo ""
+        echo "==> Für $VPN (WireGuard oder OpenVPN) musst du folgende Änderungen vornehmen:"
+        echo "1. Ändere die 'AllowedIPs' in der WireGuard-Konfiguration (z.B. wg0.conf):"
+        echo "   - Füge den Xray-Server als Ziel für den gesamten Verkehr hinzu, z.B. 'AllowedIPs = 0.0.0.0/0, ::/0'."
+        echo "2. Falls du OpenVPN verwendest, ändere die Route in der Konfiguration (z.B. client.ovpn):"
+        echo "   - Füge hinzu: 'route 0.0.0.0 0.0.0.0 vpn_gateway'."
+        echo "3. Ändere das Standard-Routing, um den Tunnelverkehr über Xray zu leiten:"
+        echo "   - Beispiel: 'PostUp = ip route add default via 127.0.0.1:$XRAY_PORT'."
     done
 fi
 
-echo "Alle Xray-Clients wurden erfolgreich gestartet."
-
+echo "Alle Xray-Clients und tun2socks-Instanzen wurden erfolgreich gestartet."
 }
 
 # Funktion zur Installation von tun2socks (OS-spezifisch)
@@ -185,7 +212,6 @@ install_tun2socks() {
             ;;
     esac
 }
-
 
 # Hauptfunktion
 main() {
