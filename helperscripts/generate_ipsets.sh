@@ -2,6 +2,9 @@
 
 source /opt/mpvpn/globals.sh
 
+#!/bin/bash
+set -e
+
 # Funktion zum Überprüfen des Betriebssystems
 get_os_type() {
     if [ -f /etc/os-release ]; then
@@ -16,39 +19,33 @@ get_os_type() {
 install_ipset() {
     OS=$(get_os_type)
 
-    case "$OS" in
-        debian|ubuntu|raspbian)
-            if ! command -v ipset &>/dev/null; then
+    # Überprüfen, ob ipset bereits installiert ist
+    if command -v ipset &>/dev/null; then
+        echo "===> ipset ist bereits installiert."
+    else
+        case "$OS" in
+            debian|ubuntu|raspbian)
                 echo "===> ipset nicht gefunden. Installiere auf $OS..."
                 apt update && apt install -y ipset
-            else
-                echo "===> ipset ist bereits installiert."
-            fi
-            ;;
-        alma|rocky|rhel)
-            if ! command -v ipset &>/dev/null; then
+                ;;
+            alma|rocky|rhel)
                 echo "===> ipset nicht gefunden. Installiere auf $OS..."
                 dnf install -y ipset
-            else
-                echo "===> ipset ist bereits installiert."
-            fi
-            ;;
-        alpine)
-            if ! command -v ipset &>/dev/null; then
+                ;;
+            alpine)
                 echo "===> ipset nicht gefunden. Installiere auf Alpine..."
                 apk add ipset
-            else
-                echo "===> ipset ist bereits installiert."
-            fi
-            ;;
-        *)
-            echo "===> Betriebssystem $OS nicht erkannt. Bitte manuell installieren."
-            ;;
-    esac
+                ;;
+            *)
+                echo "===> Betriebssystem $OS nicht erkannt. Bitte manuell installieren."
+                ;;
+        esac
+    fi
 }
 
 # Installiere ipset
 install_ipset
+
 
 RESET=false
 APPLY_RULES=false
