@@ -40,19 +40,19 @@ check_iproute2() {
 }
 
 install_common_tools_debian() {
-    apt update && apt upgrade -y && apt install -y curl wget git iptables net-tools nano rsyslog jq dnsutils dialog wireguard-tools bc
+    apt update && apt upgrade -y && apt install -y curl wget git iptables net-tools nano rsyslog jq dnsutils dialog wireguard-tools bc ipset
 }
 
 install_common_tools_rpm() {
-    dnf update -y && dnf upgrade -y && dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools bc
+    dnf update -y && dnf upgrade -y && dnf install -y curl wget git iptables net-tools nano rsyslog jq bind-utils dialog wireguard-tools bc ipset
 }
 
 install_common_tools_arch() {
-    pacman -Syu --noconfirm && pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng jq bind-tools dialog wireguard-tools bc
+    pacman -Syu --noconfirm && pacman -S --noconfirm curl wget git iptables net-tools nano syslog-ng jq bind-tools dialog wireguard-tools bc ipset
 }
 
 install_common_tools_suse() {
-    zypper refresh && zypper update -y && zypper install -y curl wget git iptables net-tools nano syslog-ng jq bind-utils dialog wireguard-tools bc
+    zypper refresh && zypper update -y && zypper install -y curl wget git iptables net-tools nano syslog-ng jq bind-utils dialog wireguard-tools bc ipset
 }
 
 install_iptables_alternative_debian() {
@@ -207,7 +207,7 @@ sudo mkdir -p /opt
 cd /opt || exit 1
 
 echo "⬇️  Klone mpvpn-Repository..."
-sudo git clone https://github.com/KevinGandalf/mpvpn.git || {
+sudo git clone --branch experimental --single-branch https://github.com/KevinGandalf/mpvpn.git || {
     echo "❌ Git clone fehlgeschlagen"
     exit 1
 }
