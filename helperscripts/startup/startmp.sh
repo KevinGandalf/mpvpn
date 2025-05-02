@@ -20,9 +20,10 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 STATUSFILE="$BASE_PATH/helperscripts/startup/logs/mpinitstatus.log"
 STATUSDIR="$(dirname "$STATUSFILE")"
 
-# Log-Verzeichnis prüfen und ggf. erstellen
-if [[ ! -d "$STATUSDIR" ]]; then
+# Verzeichnis prüfen und ggf. erstellen
+if [ ! -d "$STATUSDIR" ]; then
     mkdir -p "$STATUSDIR"
+    echo "📁 Status-Log-Verzeichnis $STATUSDIR wurde erstellt."
 fi
 
 init_kernel_params() {
