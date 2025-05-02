@@ -70,7 +70,7 @@ echo "Setze Routing Tables..."
 /opt/mpvpn/helperscripts/startup/addfwmark.sh
 
 echo "Setze FWMARKs und Routing Regeln..."
-/opt/mpvpn/routes/set_routingrules.sh
+/opt/mpvpn/helperscripts/routes/set_routingrules.sh
 #Erhalte IP-Adressen zu diversen Mail Domänen, mit Output
 echo "Besorge IP-Adressen von diversen Mail Diensten..."
 /opt/mpvpn/helperscripts/splitdns/get_mailserver.sh
