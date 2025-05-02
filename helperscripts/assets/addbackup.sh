@@ -4,7 +4,7 @@
 source $BASE_PATH/globals.conf
 
 # Lokales Arbeitsverzeichnis für Backup-Skripte und temporäre Dateien
-BACKUP_WORKDIR="/opt/mpvpn/helperscripts/backup"
+BACKUP_WORKDIR="$BASE_PATH/helperscripts/backup"
 
 # Sicherstellen, dass das Verzeichnis existiert
 mkdir -p "$BACKUP_WORKDIR"

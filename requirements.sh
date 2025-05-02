@@ -169,7 +169,7 @@ main() {
     read -p "Möchtest du das Kernel-Upgrade auf 6.x ausführen? (empfohlen) (y/n): " do_upgrade
     if [[ "$do_upgrade" == "y" ]]; then
         echo "🚀 Starte Kernel-Upgrade..."
-        bash /opt/mpvpn/helperscripts/misc/kernel_upgrade.sh
+        bash $BASE_PATH/helperscripts/misc/kernel_upgrade.sh
         echo "✅ Kernel-Upgrade abgeschlossen."
         read -p "❗ System muss eventuell neu gestartet werden. Jetzt rebooten? (y/n): " reboot_now
         [[ "$reboot_now" == "y" ]] && reboot

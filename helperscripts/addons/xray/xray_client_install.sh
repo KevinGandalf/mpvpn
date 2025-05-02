@@ -133,7 +133,7 @@ read -rp "Gib den SSH-Benutzernamen auf dem Zielserver ein (default: root): " SS
 SSH_USER=${SSH_USER:-root}
 
 echo "===> Übertrage Setup-Dateien an $SSH_USER@$REMOTE_HOST"
-scp /opt/mpvpn/helperscripts/addons/xray/xray_server_setup.sh "$SSH_USER@$REMOTE_HOST:/tmp/xray_server_setup.sh"
+scp $BASE_PATH/helperscripts/addons/xray/xray_server_setup.sh "$SSH_USER@$REMOTE_HOST:/tmp/xray_server_setup.sh"
 scp /tmp/xray_server_setup.tmp "$SSH_USER@$REMOTE_HOST:/tmp/xray_server_setup.tmp"
 
 echo "===> Führe Server-Setup auf dem Zielserver aus..."

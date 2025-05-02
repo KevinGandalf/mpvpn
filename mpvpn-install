@@ -163,7 +163,7 @@ kernel_upgrade_prompt() {
     read -p "🔧 Kernel-Upgrade auf 6.x ausführen? (y/n): " upgrade_kernel
     if [[ "$upgrade_kernel" == "y" ]]; then
         echo "🚀 Starte Kernel-Upgrade..."
-        bash /opt/mpvpn/helperscripts/misc/kernel_upgrade.sh || echo "⚠️  Kernel-Upgrade fehlgeschlagen."
+        bash $BASE_PATH/helperscripts/misc/kernel_upgrade.sh || echo "⚠️  Kernel-Upgrade fehlgeschlagen."
         read -p "🔁 Jetzt neu starten? (y/n): " reboot_now
         [[ "$reboot_now" == "y" ]] && reboot
     fi
@@ -246,7 +246,7 @@ if [[ "$ENABLE_UNBOUND" == true || "$ENABLE_DNSCRYPT" == true ]]; then
     bash "$BASE_PATH/helperscripts/addons/dns/install_dns.sh"
 fi
 
-INSTALL_2FA_SCRIPT="/opt/mpvpn/helperscripts/addons/ssh/install_ssh2fa.sh"
+INSTALL_2FA_SCRIPT="$BASE_PATH/helperscripts/addons/ssh/install_ssh2fa.sh"
 # === SSH 2FA aktivieren wenn gewünscht ===
 if [[ "$ENABLE_SSH2FA" == "true" ]]; then
   if [[ -x "$INSTALL_2FA_SCRIPT" ]]; then

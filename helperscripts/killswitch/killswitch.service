@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/opt/mpvpn/helperscripts/killswitch/killswitch.sh
+ExecStart=$BASE_PATH/helperscripts/killswitch/killswitch.sh
 Restart=always
 RestartSec=5
 StandardOutput=journal

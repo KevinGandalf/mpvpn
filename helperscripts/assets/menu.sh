@@ -44,28 +44,28 @@ elif [[ "$1" == "--install" ]]; then
     /opt/mpvpn/requirements.sh
 elif [[ "$1" == "--addwg" ]]; then
     # Befehl für WireGuard-Verbindung hinzufügen
-    /opt/mpvpn/helperscripts/assets/addwgconnection.sh
+    $BASE_PATH/helperscripts/assets/addwgconnection.sh
 elif [[ "$1" == "--addopenvpn" ]]; then
     # Befehl für OpenVPN-Verbindung hinzufügen
-    /opt/mpvpn/helperscripts/assets/addopenvpnconnection.sh
+    $BASE_PATH/helperscripts/assets/addopenvpnconnection.sh
 elif [[ "$1" == "--addsssocks5" ]]; then
     # Befehl zum Hinzufügen eines SSH SOCKS5-Tunnels
-    /opt/mpvpn/helperscripts/assets/addsshsocks5.sh
+    $BASE_PATH/helperscripts/assets/addsshsocks5.sh
 elif [[ "$1" == "--status" ]]; then
     # Befehl um den Status der Routing Regeln etc. zu prüfen
-    /opt/mpvpn/helperscripts/misc/check_status.sh
+    $BASE_PATH/helperscripts/misc/check_status.sh
 elif [[ "$1" == "--list" ]]; then
     # Befehl für das Anzeigen der aktiven Verbindungen
     list_active_connections
 elif [[ "$1" == "--backup" ]]; then
     # Befehl für das Erstellen von Backups
-    /opt/mpvpn/helperscripts/assets/addbackup.sh
+    $BASE_PATH/helperscripts/assets/addbackup.sh
 elif [[ "$1" == "--restore" ]]; then
     # Befehl für das Wiederherstellen von Backups
-    /opt/mpvpn/helperscripts/assets/restorebackup.sh
+    $BASE_PATH/helperscripts/assets/restorebackup.sh
 elif [[ "$1" == "--update" ]]; then
     # Befehl für das Update von MPVPN
-    /opt/mpvpn/helperscripts/assets/update.sh
+    $BASE_PATH/helperscripts/assets/update.sh
 elif [[ "$1" == "--help" ]]; then
     # Hilfe anzeigen
     show_help
