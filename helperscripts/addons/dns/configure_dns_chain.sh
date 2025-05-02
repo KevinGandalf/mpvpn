@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Globale Variablen laden
-source /opt/mpvpn/globals.sh
+source $BASE_PATH/globals.conf
 
 echo "🛠️  Konfiguriere iptables DNS-Chain..."
 
