@@ -1,16 +1,29 @@
 #!/bin/bash
-exec > >(tee -a /opt/mpvpn/logs/startmp.log) 2>&1
 set -x
 
 source /opt/mpvpn/globals.sh
+BASE_PATH="/opt/mpvpn"
+LOG_DIR="$BASE_PATH/logs"
+LOG_FILE="$LOG_DIR/startmp.log"
+
+# Prüfen, ob das Verzeichnis existiert, sonst erstellen
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+    echo "📁 Log-Verzeichnis $LOG_DIR wurde erstellt."
+fi
+
+# Ausgabe umleiten in Logdatei + gleichzeitig ins Terminal
+exec > >(tee -a "$LOG_FILE") 2>&1
+
 
 # Dynamischer Pfad für das Status-Logfile
 STATUSFILE="$BASE_PATH/helperscripts/startup/logs/mpinitstatus.log"
 STATUSDIR="$(dirname "$STATUSFILE")"
 
-# Log-Verzeichnis prüfen und ggf. erstellen
-if [[ ! -d "$STATUSDIR" ]]; then
+# Verzeichnis prüfen und ggf. erstellen
+if [ ! -d "$STATUSDIR" ]; then
     mkdir -p "$STATUSDIR"
+    echo "📁 Status-Log-Verzeichnis $STATUSDIR wurde erstellt."
 fi
 
 init_kernel_params() {
