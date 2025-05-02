@@ -3,7 +3,16 @@ source $BASE_PATH/globals.conf
 
 # === Variablen ===
 LOGFILE="/var/log/splitdns_routing_mirror.log"
-STATUS_FILE="/opt/mpvpn/splitdns/statusdomain.txt"
+# Status-Datei für DNS-Domain-Routing
+STATUSFILE="statusdomain.txt"
+STATUS_PATH="$BASE_PATH/helperscripts/splitdns/$STATUSFILE"
+
+# Datei erstellen, falls sie nicht existiert
+if [ ! -f "$STATUS_PATH" ]; then
+    echo "ℹ️  Erstelle Status-Datei: $STATUS_PATH"
+    touch "$STATUS_PATH"
+fi
+
 
 # DNS-Server für die Auflösung
 DNS_SERVERS=(
