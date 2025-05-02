@@ -54,7 +54,7 @@ Es installiert folgende Pakete:
 - Bei Bedarf Unbound
 - Bei Bedarf DNSCrypt
 
-Alle relevanten Start-Skripte befinden sich im Verzeichnis `$BASE_PATH/helperscripts/startup`.
+Alle relevanten Start-Skripte befinden sich im Verzeichnis `/opt/mpvpn/helperscripts/startup`.
 
 ## Installation
 1. Ein paar dinge vorab erledigen und klonen des Repository:
@@ -82,7 +82,7 @@ git clone https://github.com/KevinGandalf/mpvpn
     ```bash
     cd /opt/mpvpn
     find /opt/mpvpn -type f -name "*.sh" -exec chmod +x {} \;
-    ln -s $BASE_PATH/helperscripts/assets/menu.sh /usr/local/bin/mpvpn
+    ln -s /opt/mpvpn/helperscripts/assets/menu.sh /usr/local/bin/mpvpn
     mpvpn --install
     ```
 
@@ -284,4 +284,3 @@ ENABLE_Backup=false  # Setze auf true, um das Backup zu aktivieren, false um es 
       --help         : Zeigt diese Hilfe an.
       --version      : Gibt die Version des Skripts aus.
 ```
-
