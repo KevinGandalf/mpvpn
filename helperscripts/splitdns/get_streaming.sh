@@ -60,10 +60,15 @@ fi
 
 # === Load IP file ===
 echo "$(date) - Loading IP addresses from GitHub..."
-if ! curl --interface $DEFAULT_LANIF -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"; then
+if ! curl --interface "$DEFAULT_LANIF" -s https://lou.h0rst.us/vpn_bypass.txt -o "$IP_FILE"; then
     echo "❌ Failed to download IP list!" >&2
     exit 1
 fi
+
+# Duplikate entfernen
+sort -u "$IP_FILE" -o "$IP_FILE"
+echo "✅ Duplikate entfernt aus $IP_FILE"
+
 
 # === Load IPs into array ===
 mapfile -t ip_list < <(grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(/[0-9]+)?$' "$IP_FILE")
