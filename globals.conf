@@ -80,6 +80,12 @@ DNS_SURFSHARK="162.252.172.57,149.154.159.92"	# surfshark
  DNSCRYPT_REQUIRE_NOLOG=true
  DNSCRYPT_REQUIRE_NOFILTER=true
 
+ LOCAL_DNS_IP="127.0.0.1"
+ DNS_ROUTE_MARK=0x64
+ DNS_ROUTE_TABLE=64
+ VPN_GATEWAY_IP="10.0.0.1"     # Beispiel-Gateway vom VPN
+ VPN_INTERFACE="wg0"           # Beispiel-VPN-Interface
+
 declare -a EXTRA_RT_TABLES=(
     "100 clear"
     "200 smtp"
