@@ -3,10 +3,10 @@ set -Eeuo pipefail
 
 trap 'echo "❌ [$(date +%T)] Fehler in Zeile $LINENO: Befehl \"$BASH_COMMAND\" fehlgeschlagen." >&2' ERR
 
-source /opt/mpvpn/globals.sh
+source /opt/mpvpn/globals.conf
 
 # === KONFIGURATION ===
-CONFIG_FILE="/opt/mpvpn/globals.sh"
+CONFIG_FILE="/opt/mpvpn/globals.conf"
 IPSET_NAME="smtp_dst_ip"
 ROUTE_TABLE="smtp"
 TABLE_ID="200"
